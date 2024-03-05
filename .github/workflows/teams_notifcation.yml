@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Intentionally fail the job
-        run: exit 1 # This step will always fail
-
+      - name: Simulate error
+        run: exit 1
+        
       - name: Send notification to Microsoft Teams
         run: |
           mention="<at>sreehass@amd.com</at>\n"
