@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - main
+      
   pull_request:
     branches:
       - main
-  workflow_dispatch:
+
+  workflow_dispatch: # Trigger to allow manual execution from GitHub Actions UI
 
 jobs:
   build:
@@ -16,13 +18,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-    
-      # Add your build steps here
+      
+      - name: Build
+        run: echo "Building" # Replace this with your build command
       
       - name: Send notification to Microsoft Teams
         env:
-          JOB_NAME: Build and Notify
+          JOB_NAME: ${{ github.workflow }}
           BUILD_NUMBER: ${{ github.run_number }}
+          COLOR: ""
+          STATUS_LABEL: ""
         run: |
           jobStatus=$(curl -s -o /dev/null -w "%{http_code}" "${BUILD_URL}")
           if [[ $jobStatus -eq 200 ]]; then
