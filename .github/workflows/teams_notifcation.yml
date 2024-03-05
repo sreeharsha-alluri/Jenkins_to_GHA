@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      #- name: Simulate error
-      #  run: exit 1
-      #  id: error
+      - name: Simulate error
+        run: exit 1
+        id: error
         
       - name: Send notification to Microsoft Teams
         if: always()
@@ -29,7 +29,7 @@ jobs:
           JOB_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           
           # Determine the job status
-          if [ ${{ steps.error.outcome }} == 'success' ]; then
+          if [ "${{ steps.error.outcome }}" == 'success' ]; then
             status="PASS"
             color="good"
           else
