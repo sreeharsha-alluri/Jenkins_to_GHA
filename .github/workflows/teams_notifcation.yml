@@ -14,9 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # - name: Intentionally fail the job
+      - name: Intentionally fail the job
+        run: exit 1 # This step will always fail
+        # Comment out the above line to prevent the intentional failure
+      # - name: Intentionally fail the job (commented out)
       #   run: exit 1 # This step will always fail
       - name: Send notification to Microsoft Teams
+        # Send notification regardless of success or failure
         run: |
           mention="<at>sreehass@amd.com</at>\n"
           mentionedId="sreehass@amd.com"
