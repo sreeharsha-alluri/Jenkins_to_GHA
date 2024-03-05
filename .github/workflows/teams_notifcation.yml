@@ -59,7 +59,7 @@ jobs:
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Job URL:** [**'"$BUILD_URL"'**]('"$BUILD_URL"')",
+                      "text": "**Job URL:** [**'"$BUILD_URL"'**]('"${{ github.run_url }}")",
                       "color": "'"$COLOR"'"
                     },
                     {
