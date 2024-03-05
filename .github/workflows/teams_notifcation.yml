@@ -19,12 +19,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       
-      - name: Print Build URL
-        run: echo "Build URL: ${{ github.run_url }}"
-      
-      - name: Test Connection
-        run: ping -c 5 amdcloud.webhook.office.com
-    
       - name: Build
         run: echo "Building" # Replace this with your build command
       
@@ -36,10 +30,7 @@ jobs:
           COLOR: ""
           STATUS_LABEL: ""
         run: |
-          echo "Executing notification script..."
           jobStatus=$(curl -s -o /dev/null -w "%{http_code}" "${BUILD_URL}")
-          echo "Job Status: $jobStatus"
-          
           if [[ $jobStatus -eq 200 ]]; then
             COLOR="good"
             STATUS_LABEL="PASS"
@@ -100,5 +91,4 @@ jobs:
           
           escapedPayload=$(echo "$payload" | sed 's/"/\\\\"/g')
           
-          echo "Sending payload to Microsoft Teams..."
           curl -X POST -H 'Content-Type: application/json' -d "$escapedPayload" 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
