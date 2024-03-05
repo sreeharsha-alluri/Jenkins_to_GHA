@@ -15,7 +15,7 @@ jobs:
     
     steps:
       - name: Intentionally fail the job
-        run: exit 1 || true # This step will always fail
+        run: exit 1 
         
       - name: Send notification to Microsoft Teams
         run: |
