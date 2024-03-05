@@ -14,10 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Intentionally fail the job
-        run: exit 1 
+      #- name: Intentionally fail the job
+      #  run: exit 1 # This step will always fail
         
       - name: Send notification to Microsoft Teams
+        if: failure() # Send notification only if the previous step fails
         run: |
           mention="<at>sreehass@amd.com</at>\n"
           mentionedId="sreehass@amd.com"
@@ -37,22 +38,22 @@ jobs:
                     {
                       "type": "TextBlock",
                       "text": "'"$mention"'",
-                      "color": "good"
+                      "color": "attention"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Job Name:** '"$JOB_NAME"'",
-                      "color": "good"
+                      "color": "attention"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Status:** PASS",
-                      "color": "good"
+                      "text": "**Status:** FAIL",
+                      "color": "attention"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Build URL:** [View Run]('"$BUILD_URL"')",
-                      "color": "good"
+                      "color": "attention"
                     }
                   ],
                   "msteams": {
