@@ -26,7 +26,7 @@ jobs:
         env:
           JOB_NAME: ${{ github.workflow }}
           BUILD_NUMBER: ${{ github.run_number }}
-          BUILD_URL: ${{ github.run_url }}
+          BUILD_URL: "https://example.com/build/${{ github.run_number }}"
           COLOR: ""
           STATUS_LABEL: ""
         run: |
