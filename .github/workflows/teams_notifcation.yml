@@ -14,18 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      #- name: Intentionally fail the job
-      #  run: exit 1 # This step will always fail
-        
       - name: Send notification to Microsoft Teams
-        if: failure() # Send notification only if the previous step fails
         run: |
           mention="<at>sreehass@amd.com</at>\n"
           mentionedId="sreehass@amd.com"
           mentionedName="A S S K, Sreeharsha"
           
           # Get the GitHub workflow run URL
-          BUILD_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          JOB_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           
           payload='{
             "type": "message",
@@ -38,22 +34,22 @@ jobs:
                     {
                       "type": "TextBlock",
                       "text": "'"$mention"'",
-                      "color": "attention"
+                      "color": "good"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Job Name:** '"$JOB_NAME"'",
-                      "color": "attention"
+                      "color": "good"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Status:** FAIL",
-                      "color": "attention"
+                      "text": "**Job URL:** [View Job]('"$JOB_URL"')",
+                      "color": "good"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Build URL:** [View Run]('"$BUILD_URL"')",
-                      "color": "attention"
+                      "text": "**Status:** PASS",
+                      "color": "good"
                     }
                   ],
                   "msteams": {
