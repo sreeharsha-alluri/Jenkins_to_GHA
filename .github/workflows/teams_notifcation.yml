@@ -20,6 +20,9 @@ jobs:
           mentionedId="sreehass@amd.com"
           mentionedName="A S S K, Sreeharsha"
           
+          # Get the GitHub workflow run URL
+          BUILD_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          
           payload='{
             "type": "message",
             "attachments": [
@@ -41,6 +44,11 @@ jobs:
                     {
                       "type": "TextBlock",
                       "text": "**Status:** PASS",
+                      "color": "good"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Build URL:** [View Run]('"$BUILD_URL"')",
                       "color": "good"
                     }
                   ],
