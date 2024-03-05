@@ -15,8 +15,8 @@ jobs:
     
     steps:
       # Uncomment the following lines to simulate an error
-      # - name: Intentionally fail the job
-      #   run: exit 1 # This step will always fail
+      - name: Intentionally fail the job
+        run: exit 1 # This step will always fail
         
       - name: Send notification to Microsoft Teams
         run: |
