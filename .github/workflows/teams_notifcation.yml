@@ -26,7 +26,7 @@ jobs:
           BUILD_NUMBER: ${{ github.run_number }}
           BUILD_URL: ${{ github.run_url }}
         run: |
-          jobStatus=$(curl -s -o /dev/null -w "%{http_code}" "${BUILD_URL}")
+          jobStatus=$(curl -s -o /dev/null -w "%{http_code}" "${{ github.run_url }}")
           if [[ $jobStatus -eq 200 ]]; then
             COLOR="good"
             STATUS_LABEL="PASS"
