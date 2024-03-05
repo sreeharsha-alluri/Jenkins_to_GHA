@@ -24,18 +24,7 @@ jobs:
         env:
           JOB_NAME: ${{ github.workflow }}
           BUILD_NUMBER: ${{ github.run_number }}
-          COLOR: ""
-          STATUS_LABEL: ""
         run: |
-          jobStatus=$(curl -s -o /dev/null -w "%{http_code}" "${BUILD_URL}")
-          if [[ $jobStatus -eq 200 ]]; then
-            COLOR="good"
-            STATUS_LABEL="PASS"
-          else
-            COLOR="attention"
-            STATUS_LABEL="FAIL"
-          fi
-          
           mention="<at>sreehass@amd.com</at>\n"
           mentionedId="sreehass@amd.com"
           mentionedName="A S S K, Sreeharsha"
@@ -51,17 +40,17 @@ jobs:
                     {
                       "type": "TextBlock",
                       "text": "'"$mention"'",
-                      "color": "'"$COLOR"'"
+                      "color": "good"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Job Name:** '"$JOB_NAME"'",
-                      "color": "'"$COLOR"'"
+                      "color": "good"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Status:** '"$STATUS_LABEL"'",
-                      "color": "'"$COLOR"'"
+                      "text": "**Status:** PASS",
+                      "color": "good"
                     }
                   ],
                   "msteams": {
