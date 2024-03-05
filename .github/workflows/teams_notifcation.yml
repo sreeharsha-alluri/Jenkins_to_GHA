@@ -33,22 +33,32 @@ jobs:
                   "body": [
                     {
                       "type": "TextBlock",
-                      "text": "'"$mention"'",
+                      "text": "**Job Name**",
                       "color": "good"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Job Name:** '"$JOB_NAME"'",
+                      "text": "'"$JOB_NAME"'",
                       "color": "good"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Job URL:** [View Job]('"$JOB_URL"')",
+                      "text": "**Job URL**",
                       "color": "good"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Status:** PASS",
+                      "text": "'"$JOB_URL"'",
+                      "color": "good"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Status**",
+                      "color": "good"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "PASS",
                       "color": "good"
                     }
                   ],
