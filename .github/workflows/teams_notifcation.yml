@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - main
+      
   pull_request:
     branches:
       - main
-  workflow_dispatch:
+
+  workflow_dispatch: # Trigger to allow manual execution from GitHub Actions UI
 
 jobs:
   build:
