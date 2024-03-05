@@ -15,7 +15,7 @@ jobs:
     
     steps:
       - name: Simulate error
-        run: exit 1 || true
+        run: exit 1
         
       - name: Send notification to Microsoft Teams
         run: |
