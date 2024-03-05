@@ -25,7 +25,7 @@ jobs:
       - name: Determine status
         id: status
         run: |
-          jobStatus=$(curl -s -o /dev/null -w "%{http_code}" "${BUILD_URL}")
+          jobStatus=$(curl -s -o /dev/null -w "%{http_code}" "")
           if [[ $jobStatus -eq 200 ]]; then
             echo "::set-output name=color::good"
             echo "::set-output name=status_label::PASS"
@@ -33,9 +33,7 @@ jobs:
             echo "::set-output name=color::attention"
             echo "::set-output name=status_label::FAIL"
           fi
-        env:
-          BUILD_URL: ${{ github.run_url }}
-      
+          
       - name: Send notification to Microsoft Teams
         if: always()
         env:
@@ -43,7 +41,6 @@ jobs:
           BUILD_NUMBER: ${{ github.run_number }}
           COLOR: ${{ steps.status.outputs.color }}
           STATUS_LABEL: ${{ steps.status.outputs.status_label }}
-          WEBHOOK_URL: 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
         run: |
           mention="<at>sreehass@amd.com</at>\n"
           mentionedId="sreehass@amd.com"
@@ -97,4 +94,4 @@ jobs:
           
           escapedPayload=$(echo "$payload" | sed 's/"/\\\\"/g')
           
-          curl -X POST -H 'Content-Type: application/json' -d "$escapedPayload" "$WEBHOOK_URL"
+          curl -X POST -H 'Content-Type: application/json' -d "$escapedPayload" 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
