@@ -23,7 +23,6 @@ jobs:
         env:
           JOB_NAME: Build and Notify
           BUILD_NUMBER: ${{ github.run_number }}
-          # Remove BUILD_URL if you don't want to include it in the payload
         run: |
           jobStatus=$(curl -s -o /dev/null -w "%{http_code}" "${BUILD_URL}")
           if [[ $jobStatus -eq 200 ]]; then
@@ -54,11 +53,6 @@ jobs:
                     {
                       "type": "TextBlock",
                       "text": "**Job Name:** '"$JOB_NAME"'",
-                      "color": "'"$COLOR"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Job URL:** [**'"$BUILD_URL"'**]('"$BUILD_URL"')",
                       "color": "'"$COLOR"'"
                     },
                     {
