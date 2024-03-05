@@ -7,7 +7,6 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   build:
@@ -16,17 +15,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Run build
-        run: echo "Building"
+    
+      - name: Build
+        run: echo "Building" # Replace this with your build command
       
       - name: Send notification to Microsoft Teams
         env:
-          JOB_NAME: Build and Notify
+          JOB_NAME: ${{ github.workflow }}
           BUILD_NUMBER: ${{ github.run_number }}
-          BUILD_URL: ${{ github.run_url }}
         run: |
-          jobStatus=$(curl -s -o /dev/null -w "%{http_code}" "${{ github.run_url }}")
+          jobStatus=$(curl -s -o /dev/null -w "%{http_code}" "")
           if [[ $jobStatus -eq 200 ]]; then
             COLOR="good"
             STATUS_LABEL="PASS"
@@ -55,11 +53,6 @@ jobs:
                     {
                       "type": "TextBlock",
                       "text": "**Job Name:** '"$JOB_NAME"'",
-                      "color": "'"$COLOR"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Job URL:** [**'"$BUILD_URL"'**]('"${{ github.run_url }}")",
                       "color": "'"$COLOR"'"
                     },
                     {
