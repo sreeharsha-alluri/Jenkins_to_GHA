@@ -9,6 +9,8 @@ on:
     branches:
       - main
 
+  workflow_dispatch: # Trigger to allow manual execution from GitHub Actions UI
+
 jobs:
   build:
     runs-on: ubuntu-latest
