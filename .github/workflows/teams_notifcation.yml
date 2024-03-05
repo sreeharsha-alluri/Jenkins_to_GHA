@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Intentionally fail the job
-        run: exit 1 # This step will always fail
+      #- name: Intentionally fail the job
+      #  run: exit 1 # This step will always fail
         
       - name: Send notification to Microsoft Teams
         if: failure() # Send notification only if the previous step fails
