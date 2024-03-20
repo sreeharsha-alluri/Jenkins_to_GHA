@@ -10,7 +10,7 @@ on:
   workflow_dispatch: # Trigger to allow manual execution from GitHub Actions UI
 
 jobs:
-  build_and_notify:
+  build_and_notify: 
     runs-on: ubuntu-latest
     
     steps:
