@@ -10,7 +10,7 @@ on:
   workflow_dispatch: # Trigger to allow manual execution from GitHub Actions UI
 
 jobs:
-  build_and_notify: 
+  build_and_notify:
     runs-on: ubuntu-latest
     
     steps:
@@ -40,6 +40,7 @@ jobs:
           fi
           
       - name: Send notification to Microsoft Teams
+        if: always()
         run: |
           # Get the GitHub workflow run URL
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
@@ -59,12 +60,12 @@ jobs:
           
           # Determine the job status
           if [ -n "${{ steps.error }}" ]; then
-            status="❌ FAIL"
+            status="FAIL ❌"
             color="attention"
             mentionedId="apinapak@amd.com"
             mentionedName="Pinapaka, Abhilash Sarath Teja"
           else
-            status="✅ PASS"
+            status="PASS ✅"
             color="good"
             mentionedId="sreehass@amd.com"
             mentionedName="A S S K, Sreeharsha"
@@ -81,22 +82,22 @@ jobs:
                   "body": [
                     {
                       "type": "TextBlock",
-                      "text": "'"$mentionedName"'",
+                      "text": "'"$MENTION"'",
                       "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Status:** '"$status"'",
-                      "color": "'"$color"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Job Name:** '"${{ github.workflow }}"'",
+                      "text": "**Job Name:** Build and Notify",
                       "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Job URL:** [View Job]('"$JOB_URL"')",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Status:** '"$status"'",
                       "color": "'"$color"'"
                     },
                     {
@@ -119,7 +120,19 @@ jobs:
                       "text": "**Latest Commit:** '"$COMMIT_HASH"'",
                       "color": "'"$color"'"
                     }
-                  ]
+                  ],
+                  "msteams": {
+                    "entities": [
+                      {
+                        "type": "mention",
+                        "text": "'"$MENTION"'",
+                        "mentioned": {
+                          "id": "'"$mentionedId"'",
+                          "name": "'"$mentionedName"'"
+                        }
+                      }
+                    ]
+                  }
                 }
               }
             ]
@@ -127,3 +140,5 @@ jobs:
           
           # Send the payload to Microsoft Teams
           echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
+    env:
+      JOB_NAME: Build and Notify
