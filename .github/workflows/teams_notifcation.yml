@@ -17,30 +17,25 @@ jobs:
       - name: Send notification to Microsoft Teams
         if: always()
         run: |
-          mention="<at>sreehass@amd.com</at>\n"
-          mentionedId="sreehass@amd.com"
-          mentionedName="A S S K, Sreeharsha"
           successEmoji="✅"  # Green tick for success
           failureEmoji="❌"   # Red cross for failure
-          successTag="sreehass"   # Tag sreehass for success
-          failureTag="apinapak"   # Tag apinapak for failure
           
           # Get the GitHub workflow run URL
           JOB_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           
           # Determine the job status
           if [ -z "${{ steps.error }}" ]; then
-            status="PASS"
+            status="PASS $successEmoji"
             color="good"  # Green color for success
-            emoji="$successEmoji"
-            mentionId="$mentionedId"
-            mentionName="$mentionedName"
+            mention="<at>sreehass@amd.com</at>\n"
+            mentionedName="A S S K, Sreeharsha"
+            mentionedId="sreehass@amd.com"
           else
-            status="FAIL"
+            status="FAIL $failureEmoji"
             color="attention"  # Orange color for failure
-            emoji="$failureEmoji"
-            mentionId="apinapak@amd.com"
-            mentionName="Pinapaka, Abhilash Sarath Teja"
+            mention="<at>apinapak@amd.com</at>\n"
+            mentionedName="Pinapaka, Abhilash Sarath Teja"
+            mentionedId="apinapak@amd.com"
           fi
           
           # Generate the payload for the notification
@@ -54,12 +49,17 @@ jobs:
                   "body": [
                     {
                       "type": "TextBlock",
-                      "text": "<at>'"$mention"'</at>",
+                      "text": "'"$mention"'",
                       "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Job Name:** '"$JOB_NAME"'",
+                      "text": "**Status:** '"$status"'",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Job Name:** Build and Notify",
                       "color": "'"$color"'"
                     },
                     {
@@ -69,7 +69,22 @@ jobs:
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Status:** '"$status $emoji"'",
+                      "text": "**Repository URL:**",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Build Number:**",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Branch Name:**",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Latest Commit:**",
                       "color": "'"$color"'"
                     }
                   ],
@@ -77,10 +92,10 @@ jobs:
                     "entities": [
                       {
                         "type": "mention",
-                        "text": "<at>'"$mentionId"'</at>",
+                        "text": "'"$mention"'",
                         "mentioned": {
-                          "id": "'"$mentionId"'",
-                          "name": "'"$mentionName"'"
+                          "id": "'"$mentionedId"'",
+                          "name": "'"$mentionedName"'"
                         }
                       }
                     ]
@@ -92,5 +107,3 @@ jobs:
           
           # Send the payload to Microsoft Teams
           echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
-    env:
-      JOB_NAME: Build and Notify  
