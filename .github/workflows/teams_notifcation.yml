@@ -14,16 +14,16 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      #- name: Simulate error
-      #  run: exit 1
-      #  id: error
-        
       - name: Send notification to Microsoft Teams
         if: always()
         run: |
           mention="<at>sreehass@amd.com</at>\n"
           mentionedId="sreehass@amd.com"
           mentionedName="A S S K, Sreeharsha"
+          successEmoji="✅"  # Green tick for success
+          failureEmoji="❌"   # Red cross for failure
+          successTag="sreehass"   # Tag sreehass for success
+          failureTag="apinapak"   # Tag apinapak for failure
           
           # Get the GitHub workflow run URL
           JOB_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
@@ -31,10 +31,16 @@ jobs:
           # Determine the job status
           if [ -z "${{ steps.error }}" ]; then
             status="PASS"
-            color="good"
+            color="good"  # Green color for success
+            emoji="$successEmoji"
+            mentionId="$mentionedId"
+            mentionName="$mentionedName"
           else
             status="FAIL"
-            color="attention"
+            color="attention"  # Orange color for failure
+            emoji="$failureEmoji"
+            mentionId="apinapak@amd.com"
+            mentionName="Pinapaka, Abhilash Sarath Teja"
           fi
           
           # Generate the payload for the notification
@@ -48,7 +54,7 @@ jobs:
                   "body": [
                     {
                       "type": "TextBlock",
-                      "text": "**Status:** '"$status"'",
+                      "text": "<at>'"$mention"'</at>",
                       "color": "'"$color"'"
                     },
                     {
@@ -63,22 +69,7 @@ jobs:
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Repository URL:** https://gitenterprise.xilinx.com/sreehass/VAI-ML.git",
-                      "color": "'"$color"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Build Number:** '"${{ github.run_number }}"'",
-                      "color": "'"$color"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Branch Name:** '"${{ github.ref }}"'",
-                      "color": "'"$color"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Latest Commit:** '"${{ github.sha }}"'",
+                      "text": "**Status:** '"$status $emoji"'",
                       "color": "'"$color"'"
                     }
                   ],
@@ -86,10 +77,10 @@ jobs:
                     "entities": [
                       {
                         "type": "mention",
-                        "text": "'"$mention"'",
+                        "text": "<at>'"$mentionId"'</at>",
                         "mentioned": {
-                          "id": "'"$mentionedId"'",
-                          "name": "'"$mentionedName"'"
+                          "id": "'"$mentionId"'",
+                          "name": "'"$mentionName"'"
                         }
                       }
                     ]
