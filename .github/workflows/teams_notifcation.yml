@@ -18,6 +18,18 @@ jobs:
       #  run: exit 1
       #  id: error
         
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Get commit information
+        id: commit
+        run: |
+          COMMIT_HASH=$(git rev-parse HEAD)
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          
+          echo "::set-output name=commit_hash::$COMMIT_HASH"
+          echo "::set-output name=branch_name::$BRANCH_NAME"
+
       - name: Send notification to Microsoft Teams
         if: always()
         run: |
@@ -26,18 +38,22 @@ jobs:
           
           # Determine the job status
           if [ -z "${{ steps.error }}" ]; then
-            status="PASS"
+            status="PASS ✅"
             color="good"
             mention="<at>sreehass@amd.com</at>\n"
             mentionedId="sreehass@amd.com"
             mentionedName="A S S K, Sreeharsha"
           else
-            status="FAIL"
+            status="FAIL ❌"
             color="attention"
             mention="<at>apinapak@amd.com</at>\n"
             mentionedId="apinapak@amd.com"
             mentionedName="Pinapaka, Abhilash Sarath Teja"
           fi
+          
+          # Get the commit information
+          COMMIT_HASH=$(echo "${{ steps.commit.outputs.commit_hash }}")
+          BRANCH_NAME=$(echo "${{ steps.commit.outputs.branch_name }}")
           
           # Generate the payload for the notification
           payload='{
@@ -66,6 +82,26 @@ jobs:
                     {
                       "type": "TextBlock",
                       "text": "**Status:** '"$status"'",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Repository URL:**",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Build Number:**",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Branch Name:** '"$BRANCH_NAME"'",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Latest Commit:** '"$COMMIT_HASH"'",
                       "color": "'"$color"'"
                     }
                   ],
