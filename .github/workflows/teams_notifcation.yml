@@ -40,7 +40,6 @@ jobs:
           fi
           
       - name: Send notification to Microsoft Teams
-        if: always()
         run: |
           # Get the GitHub workflow run URL
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
