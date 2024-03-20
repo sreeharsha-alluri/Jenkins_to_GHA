@@ -14,10 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      #- name: Simulate error
-      #  run: exit 1
-      #  id: error
-        
       - name: Checkout code
         uses: actions/checkout@v2
       
@@ -29,12 +25,12 @@ jobs:
           
           echo "::set-output name=commit_hash::$COMMIT_HASH"
           echo "::set-output name=branch_name::$BRANCH_NAME"
-
+          
       - name: Send notification to Microsoft Teams
         if: always()
         run: |
           # Get the GitHub workflow run URL
-          JOB_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           
           # Determine the job status
           if [ -z "${{ steps.error }}" ]; then
@@ -54,6 +50,12 @@ jobs:
           # Get the commit information
           COMMIT_HASH=$(echo "${{ steps.commit.outputs.commit_hash }}")
           BRANCH_NAME=$(echo "${{ steps.commit.outputs.branch_name }}")
+          
+          # Get the repository URL
+          REPO_URL="${{ github.event.repository.html_url }}"
+          
+          # Get the build number
+          BUILD_NUMBER="${{ github.run_number }}"
           
           # Generate the payload for the notification
           payload='{
@@ -86,12 +88,12 @@ jobs:
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Repository URL:**",
+                      "text": "**Repository URL:** '"$REPO_URL"'",
                       "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Build Number:**",
+                      "text": "**Build Number:** '"$BUILD_NUMBER"'",
                       "color": "'"$color"'"
                     },
                     {
