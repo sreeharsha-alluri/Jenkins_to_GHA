@@ -17,6 +17,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      #- name: Simulate error
+      #  run: exit 1
+      #  id: error
+      
       - name: Get commit information
         id: commit
         run: |
@@ -25,20 +29,16 @@ jobs:
           
           echo "::set-output name=commit_hash::$COMMIT_HASH"
           echo "::set-output name=branch_name::$BRANCH_NAME"
-
-      #- name: Simulate error
-      #  run: exit 1
-      #  id: error
-
+          
       - name: Determine mention based on status
         id: mention
         run: |
-          if [ ${{ steps.error.exitcode }} -eq 0 ]; then
+          if [ -z "${{ steps.error }}" ]; then
             echo "::set-output name=mention::<at>sreehass@amd.com</at>"
           else
             echo "::set-output name=mention::<at>apinapak@amd.com</at>"
           fi
-
+          
       - name: Send notification to Microsoft Teams
         if: always()
         run: |
@@ -59,16 +59,16 @@ jobs:
           MENTION=$(echo "${{ steps.mention.outputs.mention }}")
           
           # Determine the job status
-          if [ ${{ steps.error.exitcode }} -eq 0 ]; then
-            status="PASS ✅"
-            color="good"
-            mentionedId="sreehass@amd.com"
-            mentionedName="A S S K, Sreeharsha"
-          else
+          if [ -n "${{ steps.error }}" ]; then
             status="FAIL ❌"
             color="attention"
             mentionedId="apinapak@amd.com"
             mentionedName="Pinapaka, Abhilash Sarath Teja"
+          else
+            status="PASS ✅"
+            color="good"
+            mentionedId="sreehass@amd.com"
+            mentionedName="A S S K, Sreeharsha"
           fi
           
           # Generate the payload for the notification
