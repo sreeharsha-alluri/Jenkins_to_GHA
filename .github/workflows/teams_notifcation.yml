@@ -14,28 +14,29 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      #- name: Simulate error
+      #  run: exit 1
+      #  id: error
+        
       - name: Send notification to Microsoft Teams
         if: always()
         run: |
-          successEmoji="✅"  # Green tick for success
-          failureEmoji="❌"   # Red cross for failure
-          
           # Get the GitHub workflow run URL
           JOB_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           
           # Determine the job status
           if [ -z "${{ steps.error }}" ]; then
-            status="PASS $successEmoji"
-            color="good"  # Green color for success
+            status="PASS"
+            color="good"
             mention="<at>sreehass@amd.com</at>\n"
-            mentionedName="A S S K, Sreeharsha"
             mentionedId="sreehass@amd.com"
+            mentionedName="A S S K, Sreeharsha"
           else
-            status="FAIL $failureEmoji"
-            color="attention"  # Orange color for failure
+            status="FAIL"
+            color="attention"
             mention="<at>apinapak@amd.com</at>\n"
-            mentionedName="Pinapaka, Abhilash Sarath Teja"
             mentionedId="apinapak@amd.com"
+            mentionedName="Pinapaka, Abhilash Sarath Teja"
           fi
           
           # Generate the payload for the notification
@@ -54,12 +55,7 @@ jobs:
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Status:** '"$status"'",
-                      "color": "'"$color"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Job Name:** Build and Notify",
+                      "text": "**Job Name:** '"$JOB_NAME"'",
                       "color": "'"$color"'"
                     },
                     {
@@ -69,22 +65,7 @@ jobs:
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Repository URL:**",
-                      "color": "'"$color"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Build Number:**",
-                      "color": "'"$color"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Branch Name:**",
-                      "color": "'"$color"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Latest Commit:**",
+                      "text": "**Status:** '"$status"'",
                       "color": "'"$color"'"
                     }
                   ],
@@ -92,7 +73,7 @@ jobs:
                     "entities": [
                       {
                         "type": "mention",
-                        "text": "'"$mention"'",
+                        "text": "<at>sreehass@amd.com</at>",
                         "mentioned": {
                           "id": "'"$mentionedId"'",
                           "name": "'"$mentionedName"'"
@@ -107,3 +88,5 @@ jobs:
           
           # Send the payload to Microsoft Teams
           echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
+    env:
+      JOB_NAME: Build and Notify
