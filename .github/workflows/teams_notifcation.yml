@@ -111,7 +111,7 @@ jobs:
                     "entities": [
                       {
                         "type": "mention",
-                        "text": "<at>$mention</at>",
+                        "text": "<at>sreehass@amd.com</at>",
                         "mentioned": {
                           "id": "'"$mentionedId"'",
                           "name": "'"$mentionedName"'"
