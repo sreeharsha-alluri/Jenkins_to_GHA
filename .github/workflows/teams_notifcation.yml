@@ -36,13 +36,13 @@ jobs:
           if [ -z "${{ steps.error }}" ]; then
             status="PASS ✅"
             color="good"
-            mention="<at>sreehass@amd.com</at>\n"
+            mention="<at>sreehass@amd.com</at>"
             mentionedId="sreehass@amd.com"
             mentionedName="A S S K, Sreeharsha"
           else
             status="FAIL ❌"
             color="attention"
-            mention="<at>apinapak@amd.com</at>\n"
+            mention="<at>apinapak@amd.com</at>"
             mentionedId="apinapak@amd.com"
             mentionedName="Pinapaka, Abhilash Sarath Teja"
           fi
@@ -68,7 +68,7 @@ jobs:
                   "body": [
                     {
                       "type": "TextBlock",
-                      "text": "'"$mention"'",
+                      "text": "<at>'"$mention"'</at>",
                       "color": "'"$color"'"
                     },
                     {
@@ -111,7 +111,7 @@ jobs:
                     "entities": [
                       {
                         "type": "mention",
-                        "text": "<at>sreehass@amd.com</at>",
+                        "text": "<at>'"$mention"'</at>",
                         "mentioned": {
                           "id": "'"$mentionedId"'",
                           "name": "'"$mentionedName"'"
