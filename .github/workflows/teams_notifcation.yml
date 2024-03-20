@@ -1,29 +1,140 @@
-name: Teams_Notifcation
+name: Build and Notify
+
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: # Trigger to allow manual execution from GitHub Actions UI
+
 jobs:
-  Build:
+  build_and_notify:
     runs-on: ubuntu-latest
+    
     steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - name: echo message
-      run: echo Building
-  Post-Build:
-    if: always()
-    name: Post Build
-    runs-on: ubuntu-latest
-    needs:
-    - Build
-    steps:
-    - name: echo message
-      run: echo Sending notification to Microsoft Teams
-      if: always()
-#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
-#     - name: script
-#       arguments:
-#       - key: scriptBlock
-#         value:
-#           isLiteral: true
-#           value: "def jobName = env.JOB_NAME\n                def buildNumber = env.BUILD_NUMBER\n                def jobUrl = env.BUILD_URL\n                def jobStatus = currentBuild.currentResult ?: 'UNKNOWN'\n                def statusLabel = jobStatus == 'SUCCESS' ? 'PASS' : 'FAIL'\n                def mention = \"<at>sreehass@amd.com</at>\\n\"\n                def mentionedId = \"sreehass@amd.com\"\n                def mentionedName = \"A S S K, Sreeharsha\"\n                def color = jobStatus == 'SUCCESS' ? 'good' : 'attention'\n\n                // Create the JSON payload\n                def payload = \"\"\"\n                {\n                    \"type\": \"message\",\n                    \"attachments\": [\n                        {\n                            \"contentType\": \"application/vnd.microsoft.card.adaptive\",\n                            \"content\": {\n                                \"type\": \"AdaptiveCard\",\n                                \"body\": [\n                                    {\n                                        \"type\": \"TextBlock\",\n                                        \"text\": \"${{ env.mention }}\",\n                                        \"color\": \"${{ env.color }}\"\n                                    },\n                                    {\n                                        \"type\": \"TextBlock\",\n                                        \"text\": \"**Job Name:** ${{ env.jobName }}\",\n                                        \"color\": \"${{ env.color }}\"\n                                    },\n                                    \n                                    \n                                    {\n                                        \"type\": \"TextBlock\",\n                                        \"text\": \"**Job URL:** [${{ env.jobUrl }}](${{ env.jobUrl }})\",\n                                        \"color\": \"${{ env.color }}\"\n                                    },\n                                    {\n                                        \"type\": \"TextBlock\",\n                                        \"text\": \"**Status:** ${{ env.statusLabel }}\",\n                                        \"color\": \"${{ env.color }}\"\n                                    }\n                                ],\n                                \"msteams\": {\n                                    \"entities\": [\n                                        {\n                                            \"type\": \"mention\",\n                                            \"text\": \"<at>sreehass@amd.com</at>\",\n                                            \"mentioned\": {\n                                                \"id\": \"${{ env.mentionedId }}\",\n                                                \"name\": \"${{ env.mentionedName }}\"\n                                            }\n                                        }\n                                    ]\n                                }\n                            }\n                        }\n                    ]\n                }\n                \"\"\"\n\n                // Escape double quotes in the payload\n                def escapedPayload = payload.replaceAll(/\"/, '\\\\\\\\\"')\n\n                // Execute the curl command to send the payload to Microsoft Teams webhook\n                sh \"\"\"\n                curl -X POST -H 'Content-Type: application/json' -d \"${{ env.escapedPayload }}\" 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'\n                \"\"\""
-#       if: always()
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Get commit information
+        id: commit
+        run: |
+          COMMIT_HASH=$(git rev-parse HEAD)
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          
+          echo "::set-output name=commit_hash::$COMMIT_HASH"
+          echo "::set-output name=branch_name::$BRANCH_NAME"
+          
+      - name: Determine mention based on status
+        id: mention
+        run: |
+          if [ -z "${{ steps.error }}" ]; then
+            echo "::set-output name=mention::<at>sreehass@amd.com</at>"
+          else
+            echo "::set-output name=mention::<at>apinapak@amd.com</at>"
+          fi
+          
+      - name: Send notification to Microsoft Teams
+        if: always()
+        run: |
+          # Get the GitHub workflow run URL
+          JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          
+          # Get the commit information
+          COMMIT_HASH=$(echo "${{ steps.commit.outputs.commit_hash }}")
+          BRANCH_NAME=$(echo "${{ steps.commit.outputs.branch_name }}")
+          
+          # Get the repository URL
+          REPO_URL="[${{ github.event.repository.full_name }}](${{ github.event.repository.html_url }})"
+          
+          # Get the build number
+          BUILD_NUMBER="${{ github.run_number }}"
+          
+          # Get the mention based on status
+          MENTION=$(echo "${{ steps.mention.outputs.mention }}")
+          
+          # Determine the job status
+          if [ -z "${{ steps.error }}" ]; then
+            status="PASS ✅"
+            color="good"
+            mentionedId="sreehass@amd.com"
+            mentionedName="A S S K, Sreeharsha"
+          else
+            status="FAIL ❌"
+            color="attention"
+            mentionedId="apinapak@amd.com"
+            mentionedName="Pinapaka, Abhilash Sarath Teja"
+          fi
+          
+          # Generate the payload for the notification
+          payload='{
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "type": "AdaptiveCard",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "'"$MENTION"'",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Job Name:** '"$JOB_NAME"'",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Job URL:** [View Job]('"$JOB_URL"')",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Status:** '"$status"'",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Repository URL:** '"$REPO_URL"'",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Build Number:** '"$BUILD_NUMBER"'",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Branch Name:** '"$BRANCH_NAME"'",
+                      "color": "'"$color"'"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Latest Commit:** '"$COMMIT_HASH"'",
+                      "color": "'"$color"'"
+                    }
+                  ],
+                  "msteams": {
+                    "entities": [
+                      {
+                        "type": "mention",
+                        "text": "'"$MENTION"'",
+                        "mentioned": {
+                          "id": "'"$mentionedId"'",
+                          "name": "'"$mentionedName"'"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }'
+          
+          # Send the payload to Microsoft Teams
+          echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
+    env:
+      JOB_NAME: Build and Notify
