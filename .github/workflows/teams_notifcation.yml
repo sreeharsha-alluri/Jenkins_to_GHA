@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Simulate error
-        run: exit 1
-        id: error
+      #- name: Simulate error
+      #  run: exit 1
+      #  id: error
       - name: Checkout code
         uses: actions/checkout@v2
       
@@ -52,25 +52,12 @@ jobs:
           echo "::set-output name=mentionedName::$mentionedName"
           
       - name: Send notification to Microsoft Teams
+        if: always()
         run: |
-          # Get the GitHub workflow run URL
-          JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          
-          # Get the commit information
-          COMMIT_HASH=$(echo "${{ steps.commit.outputs.commit_hash }}")
-          BRANCH_NAME=$(echo "${{ steps.commit.outputs.branch_name }}")
-          
-          # Get the repository URL
-          REPO_URL="[${{ github.event.repository.full_name }}](${{ github.event.repository.html_url }})"
-          
-          # Get the build number
-          BUILD_NUMBER="${{ github.run_number }}"
-          
           # Get the mention based on status
           MENTION=$(echo "${{ steps.mention.outputs.mention }}")
           STATUS=$(echo "${{ steps.mention.outputs.status }}")
           COLOR=$(echo "${{ steps.mention.outputs.color }}")
-          MENTIONED_ID=$(echo "${{ steps.mention.outputs.mentionedId }}")
           MENTIONED_NAME=$(echo "${{ steps.mention.outputs.mentionedName }}")
           
           # Generate the payload for the notification
@@ -84,57 +71,15 @@ jobs:
                   "body": [
                     {
                       "type": "TextBlock",
-                      "text": "'"$MENTION"'",
+                      "text": "'"$MENTIONED_NAME"'",
                       "color": "'"$COLOR"'"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Job Name:** '"$JOB_NAME"'",
-                      "color": "'"$COLOR"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Job URL:** [View Job]('"$JOB_URL"')",
-                      "color": "'"$COLOR"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Status:** '"$STATUS"'",
-                      "color": "'"$COLOR"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Repository URL:** '"$REPO_URL"'",
-                      "color": "'"$COLOR"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Build Number:** '"$BUILD_NUMBER"'",
-                      "color": "'"$COLOR"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Branch Name:** '"$BRANCH_NAME"'",
-                      "color": "'"$COLOR"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Latest Commit:** '"$COMMIT_HASH"'",
+                      "text": "Status: '"$STATUS"'",
                       "color": "'"$COLOR"'"
                     }
-                  ],
-                  "msteams": {
-                    "entities": [
-                      {
-                        "type": "mention",
-                        "text": "'"$MENTION"'",
-                        "mentioned": {
-                          "id": "'"$MENTIONED_ID"'",
-                          "name": "'"$MENTIONED_NAME"'"
-                        }
-                      }
-                    ]
-                  }
+                  ]
                 }
               }
             ]
