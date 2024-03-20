@@ -33,13 +33,25 @@ jobs:
         id: mention
         run: |
           if [ -z "${{ steps.error }}" ]; then
-            echo "::set-output name=mention::<at>sreehass@amd.com</at>"
+            status="PASS ✅"
+            color="good"
+            mention="<at>sreehass@amd.com</at>"
+            mentionedId="sreehass@amd.com"
+            mentionedName="A S S K, Sreeharsha"
           else
-            echo "::set-output name=mention::<at>apinapak@amd.com</at>"
+            status="FAIL ❌"
+            color="attention"
+            mention="<at>apinapak@amd.com</at>"
+            mentionedId="apinapak@amd.com"
+            mentionedName="Pinapaka, Abhilash Sarath Teja"
           fi
+          echo "::set-output name=mention::$mention"
+          echo "::set-output name=status::$status"
+          echo "::set-output name=color::$color"
+          echo "::set-output name=mentionedId::$mentionedId"
+          echo "::set-output name=mentionedName::$mentionedName"
           
       - name: Send notification to Microsoft Teams
-        if: always()
         run: |
           # Get the GitHub workflow run URL
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
@@ -56,19 +68,10 @@ jobs:
           
           # Get the mention based on status
           MENTION=$(echo "${{ steps.mention.outputs.mention }}")
-          
-          # Determine the job status
-          if [ -z "${{ steps.error }}" ]; then
-            status="PASS ✅"
-            color="good"
-            mentionedId="sreehass@amd.com"
-            mentionedName="A S S K, Sreeharsha"
-          else
-            status="FAIL ❌"
-            color="attention"
-            mentionedId="apinapak@amd.com"
-            mentionedName="Pinapaka, Abhilash Sarath Teja"
-          fi
+          STATUS=$(echo "${{ steps.mention.outputs.status }}")
+          COLOR=$(echo "${{ steps.mention.outputs.color }}")
+          MENTIONED_ID=$(echo "${{ steps.mention.outputs.mentionedId }}")
+          MENTIONED_NAME=$(echo "${{ steps.mention.outputs.mentionedName }}")
           
           # Generate the payload for the notification
           payload='{
@@ -82,42 +85,42 @@ jobs:
                     {
                       "type": "TextBlock",
                       "text": "'"$MENTION"'",
-                      "color": "'"$color"'"
+                      "color": "'"$COLOR"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Job Name:** '"$JOB_NAME"'",
-                      "color": "'"$color"'"
+                      "color": "'"$COLOR"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Job URL:** [View Job]('"$JOB_URL"')",
-                      "color": "'"$color"'"
+                      "color": "'"$COLOR"'"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Status:** '"$status"'",
-                      "color": "'"$color"'"
+                      "text": "**Status:** '"$STATUS"'",
+                      "color": "'"$COLOR"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Repository URL:** '"$REPO_URL"'",
-                      "color": "'"$color"'"
+                      "color": "'"$COLOR"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Build Number:** '"$BUILD_NUMBER"'",
-                      "color": "'"$color"'"
+                      "color": "'"$COLOR"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Branch Name:** '"$BRANCH_NAME"'",
-                      "color": "'"$color"'"
+                      "color": "'"$COLOR"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Latest Commit:** '"$COMMIT_HASH"'",
-                      "color": "'"$color"'"
+                      "color": "'"$COLOR"'"
                     }
                   ],
                   "msteams": {
@@ -126,8 +129,8 @@ jobs:
                         "type": "mention",
                         "text": "'"$MENTION"'",
                         "mentioned": {
-                          "id": "'"$mentionedId"'",
-                          "name": "'"$mentionedName"'"
+                          "id": "'"$MENTIONED_ID"'",
+                          "name": "'"$MENTIONED_NAME"'"
                         }
                       }
                     ]
@@ -141,4 +144,3 @@ jobs:
           echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
     env:
       JOB_NAME: Build and Notify
-
