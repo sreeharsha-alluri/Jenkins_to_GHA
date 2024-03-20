@@ -29,38 +29,25 @@ jobs:
       #- name: Simulate error
       #  run: exit 1
       #  id: error
-        # Uncomment the above lines to simulate an error
         
       - name: Send notification to Microsoft Teams
         if: always()
         run: |
+          mention="<at>sreehass@amd.com</at>\n"
+          mentionedId="sreehass@amd.com"
+          mentionedName="A S S K, Sreeharsha"
+          
           # Get the GitHub workflow run URL
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           
           # Determine the job status
           if [ -z "${{ steps.error }}" ]; then
-            status="PASS ✅"
+            status="PASS"
             color="good"
-            mention="<at>sreehass@amd.com</at>\n"
-            mentionedId="sreehass@amd.com"
-            mentionedName="A S S K, Sreeharsha"
           else
-            status="FAIL ❌"
+            status="FAIL"
             color="attention"
-            mention="<at>apinapak@amd.com</at>\n"
-            mentionedId="apinapak@amd.com"
-            mentionedName="Pinapaka, Abhilash Sarath Teja"
           fi
-          
-          # Get the commit information
-          COMMIT_HASH=$(echo "${{ steps.commit.outputs.commit_hash }}")
-          BRANCH_NAME=$(echo "${{ steps.commit.outputs.branch_name }}")
-          
-          # Get the repository URL
-          REPO_URL="[${{ github.event.repository.full_name }}](${{ github.event.repository.html_url }})"
-          
-          # Get the build number
-          BUILD_NUMBER="${{ github.run_number }}"
           
           # Generate the payload for the notification
           payload='{
@@ -89,26 +76,6 @@ jobs:
                     {
                       "type": "TextBlock",
                       "text": "**Status:** '"$status"'",
-                      "color": "'"$color"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Repository URL:** '"$REPO_URL"'",
-                      "color": "'"$color"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Build Number:** '"$BUILD_NUMBER"'",
-                      "color": "'"$color"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Branch Name:** '"$BRANCH_NAME"'",
-                      "color": "'"$color"'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Latest Commit:** '"$COMMIT_HASH"'",
                       "color": "'"$color"'"
                     }
                   ],
