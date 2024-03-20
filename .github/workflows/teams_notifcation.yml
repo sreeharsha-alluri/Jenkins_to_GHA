@@ -14,40 +14,28 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      #- name: Simulate error
+      #  run: exit 1
+      #  id: error
         
-      - name: Run tests
-        # Replace this with your actual test running command
-        run: |
-          # Example command
-          echo "Running tests..."
-          exit 1 # Replace this with the actual test command, exit 0 for success, exit 1 for failure
-      
-      - name: Determine job status and mention details
-        id: status
-        run: |
-          if [ -z "${{ steps.error }}" ]; then
-            status="✔ PASS"
-            mention="<at>sreehass@amd.com</at>\n"
-            mentionedId="sreehass@amd.com"
-            mentionedName="A S S K, Sreeharsha"
-          else
-            status="❌ FAIL"
-            mention="<at>apinapak@amd.com</at>\n"
-            mentionedId="apinapak@amd.com"
-            mentionedName="Pinapaka, Abhilash Sarath Teja"
-          fi
-          echo "::set-output name=status::$status"
-          echo "::set-output name=mention::$mention"
-          echo "::set-output name=mentionedId::$mentionedId"
-          echo "::set-output name=mentionedName::$mentionedName"
-      
       - name: Send notification to Microsoft Teams
         if: always()
         run: |
+          mention="<at>sreehass@amd.com</at>\n"
+          mentionedId="sreehass@amd.com"
+          mentionedName="A S S K, Sreeharsha"
+          
           # Get the GitHub workflow run URL
           JOB_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          
+          # Determine the job status
+          if [ -z "${{ steps.error }}" ]; then
+            status="PASS"
+            color="good"
+          else
+            status="FAIL"
+            color="attention"
+          fi
           
           # Generate the payload for the notification
           payload='{
@@ -60,53 +48,48 @@ jobs:
                   "body": [
                     {
                       "type": "TextBlock",
-                      "text": "'${{ steps.status.outputs.mention }}'",
-                      "color": "'${{ steps.status.outputs.color }}'"
+                      "text": "**Status:** '"$status"'",
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Status:** ${{ steps.status.outputs.status }}",
-                      "color": "'${{ steps.status.outputs.color }}'"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "**Job Name:** ${{ github.workflow }}",
-                      "color": "'${{ steps.status.outputs.color }}'"
+                      "text": "**Job Name:** '"$JOB_NAME"'",
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Job URL:** [View Job]('"$JOB_URL"')",
-                      "color": "'${{ steps.status.outputs.color }}'"
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Repository URL:** https://github.com/sreeharsha-alluri/Jenkins_to_GHA.git",
-                      "color": "'${{ steps.status.outputs.color }}'"
+                      "text": "**Repository URL:** https://gitenterprise.xilinx.com/sreehass/VAI-ML.git",
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Build Number:** ${{ github.run_number }}",
-                      "color": "'${{ steps.status.outputs.color }}'"
+                      "text": "**Build Number:** '"${{ github.run_number }}"'",
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Branch Name:** ${{ github.ref }}",
-                      "color": "'${{ steps.status.outputs.color }}'"
+                      "text": "**Branch Name:** '"${{ github.ref }}"'",
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Latest Commit:** ${{ github.sha }}",
-                      "color": "'${{ steps.status.outputs.color }}'"
+                      "text": "**Latest Commit:** '"${{ github.sha }}"'",
+                      "color": "'"$color"'"
                     }
                   ],
                   "msteams": {
                     "entities": [
                       {
                         "type": "mention",
-                        "text": "'${{ steps.status.outputs.mention }}'",
+                        "text": "'"$mention"'",
                         "mentioned": {
-                          "id": "'${{ steps.status.outputs.mentionedId }}'",
-                          "name": "'${{ steps.status.outputs.mentionedName }}'"
+                          "id": "'"$mentionedId"'",
+                          "name": "'"$mentionedName"'"
                         }
                       }
                     ]
@@ -117,4 +100,6 @@ jobs:
           }'
           
           # Send the payload to Microsoft Teams
-          echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- '${{ secrets.MICROSOFT_TEAMS_WEBHOOK_URL }}'
+          echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
+    env:
+      JOB_NAME: Build and Notify  
