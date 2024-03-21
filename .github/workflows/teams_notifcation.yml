@@ -30,12 +30,12 @@ jobs:
         id: status_and_recipients
         run: |
           if [ -n "${{ steps.error }}" ]; then
-            STATUS="❌ FAIL"
+            STATUS= "❌ FAIL"
             COLOR="attention"
             MENTIONED_ID="${{ secrets.ERROR_MENTION_ID }}"
             MENTIONED_NAME="${{ secrets.ERROR_MENTION_NAME }}"
           else
-            STATUS="✅ PASS"
+            STATUS= "✅ PASS"
             COLOR="good"
             MENTIONED_ID="${{ secrets.SUCCESS_MENTION_ID }}"
             MENTIONED_NAME="${{ secrets.SUCCESS_MENTION_NAME }}"
