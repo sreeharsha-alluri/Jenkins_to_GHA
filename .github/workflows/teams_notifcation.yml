@@ -47,7 +47,7 @@ jobs:
           BUILD_NUMBER="${{ github.run_number }}"
           
           # Determine the job status
-          if [ ${{ job.status }} == 'failure' ]; then
+          if [ "${{ job.status }}" == 'failure' ]; then
             status="FAIL ❌"
             color="attention"
             mentionedId="${{ secrets.FAILURE_MENTION_ID }}"
