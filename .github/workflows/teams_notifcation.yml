@@ -16,11 +16,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-       
+
       - name: Simulate error
         run: exit 1
         id: error
-
+      
       - name: Get commit information
         if: always()
         id: commit_info
@@ -45,17 +45,17 @@ jobs:
           # Get the build number
           BUILD_NUMBER="${{ github.run_number }}"
           
-          # Determine the job status and recipients dynamically using secrets
+          # Determine the job status
           if [ -n "${{ steps.error }}" ]; then
-              STATUS="FAIL ❌"
-              COLOR="attention"
-              MENTIONED_ID="${{ secrets.FAILURE_MENTION_ID }}"
-              MENTIONED_NAME="${{ secrets.FAILURE_MENTION_NAME }}"
+            status="FAIL ❌"
+            color="attention"
+            mentionedId="${{ secrets.FAILURE_MENTION_ID }}"
+            mentionedName="${{ secrets.FAILURE_MENTION_NAME }}"
           else
-              STATUS="PASS ✅"
-              COLOR="good"
-              MENTIONED_ID="${{ secrets.SUCCESS_MENTION_ID }}"
-              MENTIONED_NAME="${{ secrets.SUCCESS_MENTION_NAME }}"
+            status="PASS ✅"
+            color="good"
+            mentionedId="${{ secrets.SUCCESS_MENTION_ID }}"
+            mentionedName="${{ secrets.SUCCESS_MENTION_NAME }}"
           fi
           
           # Generate the payload for the notification
@@ -69,53 +69,53 @@ jobs:
                   "body": [
                     {
                       "type": "TextBlock",
-                      "text": "<at>'"$MENTIONED_ID"'</at>",
-                      "color": "'"$COLOR"'"
+                      "text": "<at>'"$mentionedId"'</at>",
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Job Name:** Build and Notify",
-                      "color": "'"$COLOR"'"
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Job URL:** [View Job]('"$JOB_URL"')",
-                      "color": "'"$COLOR"'"
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Status:** '"$STATUS"'",
-                      "color": "'"$COLOR"'"
+                      "text": "**Status:** '"$status"'",
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Repository URL:** '"$REPO_URL"'",
-                      "color": "'"$COLOR"'"
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Build Number:** '"$BUILD_NUMBER"'",
-                      "color": "'"$COLOR"'"
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Branch Name:** '"$BRANCH_NAME"'",
-                      "color": "'"$COLOR"'"
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Latest Commit:** '"$COMMIT_HASH"'",
-                      "color": "'"$COLOR"'"
+                      "color": "'"$color"'"
                     }
                   ],
                   "msteams": {
                     "entities": [
                       {
                         "type": "mention",
-                        "text": "<at>'"$MENTIONED_ID"'</at>",
+                        "text": "<at>'"$mentionedId"'</at>",
                         "mentioned": {
-                          "id": "'"$MENTIONED_ID"'",
-                          "name": "'"$MENTIONED_NAME"'"
+                          "id": "'"$mentionedId"'",
+                          "name": "'"$mentionedName"'"
                         }
                       }
                     ]
