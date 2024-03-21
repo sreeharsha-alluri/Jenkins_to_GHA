@@ -1,6 +1,4 @@
-name: 'Build and Notify'
-
-description: 'Builds and notifies Microsoft Teams about the status of the workflow run.'
+name: Build and Notify
 
 on:
   push:
@@ -17,19 +15,15 @@ jobs:
     
     inputs:
       error-mention-id:
-        description: 'ID for mentioning in case of error.'
         required: true
         default: 'apinapak@amd.com'
       error-mention-name:
-        description: 'Name for mentioning in case of error.'
         required: true
         default: 'Pinapaka, Abhilash Sarath Teja'
       success-mention-id:
-        description: 'ID for mentioning in case of success.'
         required: true
         default: 'sreehass@amd.com'
       success-mention-name:
-        description: 'Name for mentioning in case of success.'
         required: true
         default: 'A S S K, Sreeharsha'
     
@@ -54,13 +48,13 @@ jobs:
         id: status_and_recipients
         run: |
           if [ -n "${{ steps.error }}" ]; then
-            MENTIONED_ID=${{ inputs.error-mention-id }}
-            MENTIONED_NAME=${{ inputs.error-mention-name }}
+            MENTIONED_ID="${{ inputs.error-mention-id }}"
+            MENTIONED_NAME="${{ inputs.error-mention-name }}"
             STATUS="FAIL ❌"
             COLOR="attention"
           else
-            MENTIONED_ID=${{ inputs.success-mention-id }}
-            MENTIONED_NAME=${{ inputs.success-mention-name }}
+            MENTIONED_ID="${{ inputs.success-mention-id }}"
+            MENTIONED_NAME="${{ inputs.success-mention-name }}"
             STATUS="PASS ✅"
             COLOR="good"
           fi
@@ -160,4 +154,4 @@ jobs:
           }'
           
           # Send the payload to Microsoft Teams
-          echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
+          echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- 'https://amdcloud.webhook.office.com/webhookb2/...'
