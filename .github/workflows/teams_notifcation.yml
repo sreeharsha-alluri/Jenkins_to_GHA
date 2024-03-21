@@ -17,12 +17,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Simulate error
-        run: exit 1
-        id: error
-      
       - name: Get commit information
-        if: always()
         id: commit_info
         run: |
           COMMIT_HASH=$(git rev-parse HEAD)
@@ -47,7 +42,7 @@ jobs:
           BUILD_NUMBER="${{ github.run_number }}"
           
           # Determine the job status
-          if [ -n "${{ steps.error }}" ]; then
+          if [ -n "${{ failure() }}" ]; then
             status="FAIL ❌"
             color="attention"
             mentionedId="${{ secrets.FAILURE_MENTION_ID }}"
