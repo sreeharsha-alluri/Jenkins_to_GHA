@@ -1,4 +1,4 @@
-name: Build and Notify
+name: 'Build and Notify'
 
 on:
   push:
@@ -12,6 +12,24 @@ on:
 jobs:
   build_and_notify:
     runs-on: ubuntu-latest
+    
+    inputs:
+      error-mention-id:
+        description: 'ID for mentioning in case of error.'
+        required: true
+        default: 'apinapak@amd.com'
+      error-mention-name:
+        description: 'Name for mentioning in case of error.'
+        required: true
+        default: 'Pinapaka, Abhilash Sarath Teja'
+      success-mention-id:
+        description: 'ID for mentioning in case of success.'
+        required: true
+        default: 'sreehass@amd.com'
+      success-mention-name:
+        description: 'Name for mentioning in case of success.'
+        required: true
+        default: 'A S S K, Sreeharsha'
     
     steps:
       - name: Checkout code
@@ -29,6 +47,27 @@ jobs:
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           echo "::set-output name=commit_hash::$COMMIT_HASH"
           echo "::set-output name=branch_name::$BRANCH_NAME"
+
+      - name: Determine status and notification recipients
+        id: status_and_recipients
+        run: |
+          if [ -n "${{ steps.error }}" ]; then
+            MENTIONED_ID=${{ inputs.error-mention-id }}
+            MENTIONED_NAME=${{ inputs.error-mention-name }}
+            STATUS="FAIL ❌"
+            COLOR="attention"
+          else
+            MENTIONED_ID=${{ inputs.success-mention-id }}
+            MENTIONED_NAME=${{ inputs.success-mention-name }}
+            STATUS="PASS ✅"
+            COLOR="good"
+          fi
+
+          echo "::set-output name=status::$STATUS"
+          echo "::set-output name=color::$COLOR"
+          echo "::set-output name=mentionedId::$MENTIONED_ID"
+          echo "::set-output name=mentionedName::$MENTIONED_NAME"
+
       - name: Send notification to Microsoft Teams
         if: always()
         run: |
@@ -38,25 +77,18 @@ jobs:
           # Get the commit information from previous step
           COMMIT_HASH=${{ steps.commit_info.outputs.commit_hash }}
           BRANCH_NAME=${{ steps.commit_info.outputs.branch_name }}
-          
+
+          # Get the status and recipients from previous step
+          STATUS=${{ steps.status_and_recipients.outputs.status }}
+          COLOR=${{ steps.status_and_recipients.outputs.color }}
+          MENTIONED_ID=${{ steps.status_and_recipients.outputs.mentionedId }}
+          MENTIONED_NAME=${{ steps.status_and_recipients.outputs.mentionedName }}
+
           # Get the repository URL
           REPO_URL="[${{ github.repository }}](${{ github.event.repository.html_url }})"
           
           # Get the build number
           BUILD_NUMBER="${{ github.run_number }}"
-          
-          # Determine the job status
-          if [ -n "${{ steps.error }}" ]; then
-            status="FAIL ❌"
-            color="attention"
-            mentionedId="apinapak@amd.com"
-            mentionedName="Pinapaka, Abhilash Sarath Teja"
-          else
-            status="PASS ✅"
-            color="good"
-            mentionedId="sreehass@amd.com"
-            mentionedName="A S S K, Sreeharsha"
-          fi
           
           # Generate the payload for the notification
           payload='{
@@ -69,53 +101,53 @@ jobs:
                   "body": [
                     {
                       "type": "TextBlock",
-                      "text": "<at>'"$mentionedId"'</at>",
-                      "color": "'"$color"'"
+                      "text": "<at>'"$MENTIONED_ID"'</at>",
+                      "color": "'"$COLOR"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Job Name:** Build and Notify",
-                      "color": "'"$color"'"
+                      "color": "'"$COLOR"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Job URL:** [View Job]('"$JOB_URL"')",
-                      "color": "'"$color"'"
+                      "color": "'"$COLOR"'"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Status:** '"$status"'",
-                      "color": "'"$color"'"
+                      "text": "**Status:** '"$STATUS"'",
+                      "color": "'"$COLOR"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Repository URL:** '"$REPO_URL"'",
-                      "color": "'"$color"'"
+                      "color": "'"$COLOR"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Build Number:** '"$BUILD_NUMBER"'",
-                      "color": "'"$color"'"
+                      "color": "'"$COLOR"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Branch Name:** '"$BRANCH_NAME"'",
-                      "color": "'"$color"'"
+                      "color": "'"$COLOR"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Latest Commit:** '"$COMMIT_HASH"'",
-                      "color": "'"$color"'"
+                      "color": "'"$COLOR"'"
                     }
                   ],
                   "msteams": {
                     "entities": [
                       {
                         "type": "mention",
-                        "text": "<at>'"$mentionedId"'</at>",
+                        "text": "<at>'"$MENTIONED_ID"'</at>",
                         "mentioned": {
-                          "id": "'"$mentionedId"'",
-                          "name": "'"$mentionedName"'"
+                          "id": "'"$MENTIONED_ID"'",
+                          "name": "'"$MENTIONED_NAME"'"
                         }
                       }
                     ]
