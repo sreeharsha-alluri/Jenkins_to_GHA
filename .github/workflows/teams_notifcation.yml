@@ -12,6 +12,12 @@ on:
 jobs:
   build_and_notify:
     runs-on: ubuntu-latest
+
+    env:
+      ERROR_MENTION_ID: ${{ secrets.ERROR_MENTION_ID }}
+      ERROR_MENTION_NAME: ${{ secrets.ERROR_MENTION_NAME }}
+      SUCCESS_MENTION_ID: ${{ secrets.SUCCESS_MENTION_ID }}
+      SUCCESS_MENTION_NAME: ${{ secrets.SUCCESS_MENTION_NAME }}
     
     steps:
       - name: Checkout code
@@ -30,19 +36,19 @@ jobs:
           echo "::set-output name=commit_hash::$COMMIT_HASH"
           echo "::set-output name=branch_name::$BRANCH_NAME"
 
-      - name: Determine status and notification recipients
+      - name: Determine job status and recipients
         id: status_and_recipients
         run: |
           if [ -n "${{ steps.error }}" ]; then
-            MENTIONED_ID="apinapak@amd.com"
-            MENTIONED_NAME="Pinapaka, Abhilash Sarath Teja"
             STATUS="FAIL ❌"
             COLOR="attention"
+            MENTIONED_ID="${{ env.ERROR_MENTION_ID }}"
+            MENTIONED_NAME="${{ env.ERROR_MENTION_NAME }}"
           else
-            MENTIONED_ID="sreehass@amd.com"
-            MENTIONED_NAME="A S S K, Sreeharsha"
             STATUS="PASS ✅"
             COLOR="good"
+            MENTIONED_ID="${{ env.SUCCESS_MENTION_ID }}"
+            MENTIONED_NAME="${{ env.SUCCESS_MENTION_NAME }}"
           fi
 
           echo "::set-output name=status::$STATUS"
@@ -59,18 +65,18 @@ jobs:
           # Get the commit information from previous step
           COMMIT_HASH=${{ steps.commit_info.outputs.commit_hash }}
           BRANCH_NAME=${{ steps.commit_info.outputs.branch_name }}
-
-          # Get the status and recipients from previous step
-          STATUS=${{ steps.status_and_recipients.outputs.status }}
-          COLOR=${{ steps.status_and_recipients.outputs.color }}
-          MENTIONED_ID=${{ steps.status_and_recipients.outputs.mentionedId }}
-          MENTIONED_NAME=${{ steps.status_and_recipients.outputs.mentionedName }}
-
+          
           # Get the repository URL
           REPO_URL="[${{ github.repository }}](${{ github.event.repository.html_url }})"
           
           # Get the build number
           BUILD_NUMBER="${{ github.run_number }}"
+          
+          # Get the status and recipients from previous step
+          STATUS=${{ steps.status_and_recipients.outputs.status }}
+          COLOR=${{ steps.status_and_recipients.outputs.color }}
+          MENTIONED_ID=${{ steps.status_and_recipients.outputs.mentionedId }}
+          MENTIONED_NAME=${{ steps.status_and_recipients.outputs.mentionedName }}
           
           # Generate the payload for the notification
           payload='{
