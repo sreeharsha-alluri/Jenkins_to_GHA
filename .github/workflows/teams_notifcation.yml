@@ -32,8 +32,8 @@ jobs:
           if [ -n "${{ steps.error }}" ]; then
             STATUS="❌ FAIL"
             COLOR="attention"
-            MENTIONED_ID="${{ secrets.ERROR_MENTION_ID }}"
-            MENTIONED_NAME="${{ secrets.ERROR_MENTION_NAME }}"
+            MENTIONED_ID="${{ secrets.FAILURE_MENTION_ID }}"
+            MENTIONED_NAME="${{ secrets.FAILURE_MENTION_NAME }}"
           else
             STATUS="✅ PASS"
             COLOR="good"
