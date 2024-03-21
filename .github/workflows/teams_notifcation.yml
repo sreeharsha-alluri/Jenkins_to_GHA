@@ -13,20 +13,6 @@ jobs:
   build_and_notify:
     runs-on: ubuntu-latest
     
-    inputs:
-      error-mention-id:
-        required: true
-        default: 'apinapak@amd.com'
-      error-mention-name:
-        required: true
-        default: 'Pinapaka, Abhilash Sarath Teja'
-      success-mention-id:
-        required: true
-        default: 'sreehass@amd.com'
-      success-mention-name:
-        required: true
-        default: 'A S S K, Sreeharsha'
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -48,13 +34,13 @@ jobs:
         id: status_and_recipients
         run: |
           if [ -n "${{ steps.error }}" ]; then
-            MENTIONED_ID="${{ inputs.error-mention-id }}"
-            MENTIONED_NAME="${{ inputs.error-mention-name }}"
+            MENTIONED_ID="apinapak@amd.com"
+            MENTIONED_NAME="Pinapaka, Abhilash Sarath Teja"
             STATUS="FAIL ❌"
             COLOR="attention"
           else
-            MENTIONED_ID="${{ inputs.success-mention-id }}"
-            MENTIONED_NAME="${{ inputs.success-mention-name }}"
+            MENTIONED_ID="sreehass@amd.com"
+            MENTIONED_NAME="A S S K, Sreeharsha"
             STATUS="PASS ✅"
             COLOR="good"
           fi
