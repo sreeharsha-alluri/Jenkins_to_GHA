@@ -17,9 +17,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      #- name: Simulate error
-      #  run: exit 1
-      #  id: error
+      - name: Simulate error
+        run: exit 1
+        id: error
       
       - name: Get commit information
         id: commit
