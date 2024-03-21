@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  pull_request: 
+  pull_request:
     branches:
       - main
   workflow_dispatch: # Trigger to allow manual execution from GitHub Actions UI
@@ -31,7 +31,7 @@ jobs:
           echo "::set-output name=branch_name::$BRANCH_NAME"
           
       - name: Send notification to Microsoft Teams
-        if: ${{ failure() }}
+        if: always()
         run: |
           # Get the GitHub workflow run URL
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
@@ -47,10 +47,17 @@ jobs:
           BUILD_NUMBER="${{ github.run_number }}"
           
           # Determine the job status
-          status="FAIL ❌"
-          color="attention"
-          mentionedId="${{ secrets.FAILURE_MENTION_ID }}"
-          mentionedName="${{ secrets.FAILURE_MENTION_NAME }}"
+          if [ -n "${{ steps.error }}" ]; then
+            status="FAIL ❌"
+            color="attention"
+            mentionedId="${{ secrets.FAILURE_MENTION_ID }}"
+            mentionedName="${{ secrets.FAILURE_MENTION_NAME }}"
+          else
+            status="PASS ✅"
+            color="good"
+            mentionedId="${{ secrets.SUCCESS_MENTION_ID }}"
+            mentionedName="${{ secrets.SUCCESS_MENTION_NAME }}"
+          fi
           
           # Generate the payload for the notification
           payload='{
