@@ -17,9 +17,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      #- name: Simulate error
-      #  run: exit 1
-      #  id: error
+      - name: Simulate error
+        run: exit 1
+        id: error
       
       - name: Get commit information
         id: commit
@@ -29,26 +29,7 @@ jobs:
           
           echo "::set-output name=commit_hash::$COMMIT_HASH"
           echo "::set-output name=branch_name::$BRANCH_NAME"
-          
-      - name: Determine job status
-        if: always()
-        run: |
-          if [ -n "${{ steps.error }}" ]; then
-            status="FAIL ❌"
-            color="attention"
-            mentionedId="apinapak@amd.com"
-            mentionedName="Pinapaka, Abhilash Sarath Teja"
-          else
-            status="PASS ✅"
-            color="good"
-            mentionedId="sreehass@amd.com"
-            mentionedName="A S S K, Sreeharsha"
-          fi
-          echo "::set-output name=status::$status"
-          echo "::set-output name=color::$color"
-          echo "::set-output name=mentionedId::$mentionedId"
-          echo "::set-output name=mentionedName::$mentionedName"
-          
+      
       - name: Send notification to Microsoft Teams
         if: always()
         run: |
@@ -65,11 +46,18 @@ jobs:
           # Get the build number
           BUILD_NUMBER="${{ github.run_number }}"
           
-          # Get job status from previous step
-          STATUS="${{ steps.determine_job_status.outputs.status }}"
-          COLOR="${{ steps.determine_job_status.outputs.color }}"
-          MENTIONED_ID="${{ steps.determine_job_status.outputs.mentionedId }}"
-          MENTIONED_NAME="${{ steps.determine_job_status.outputs.mentionedName }}"
+          # Determine the job status
+          if [ -n "${{ steps.error }}" ]; then
+            status="FAIL ❌"
+            color="attention"
+            mentionedId="apinapak@amd.com"
+            mentionedName="Pinapaka, Abhilash Sarath Teja"
+          else
+            status="PASS ✅"
+            color="good"
+            mentionedId="sreehass@amd.com"
+            mentionedName="A S S K, Sreeharsha"
+          fi
           
           # Generate the payload for the notification
           payload='{
@@ -82,53 +70,53 @@ jobs:
                   "body": [
                     {
                       "type": "TextBlock",
-                      "text": "<at>${{ secrets.MENTIONED_ID }}</at>",
-                      "color": "'"$COLOR"'"
+                      "text": "<at>sreehass@amd.com</at>",
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Job Name:** Build and Notify",
-                      "color": "'"$COLOR"'"
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Job URL:** [View Job]('"$JOB_URL"')",
-                      "color": "'"$COLOR"'"
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
-                      "text": "**Status:** '"$STATUS"'",
-                      "color": "'"$COLOR"'"
+                      "text": "**Status:** '"$status"'",
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Repository URL:** '"$REPO_URL"'",
-                      "color": "'"$COLOR"'"
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Build Number:** '"$BUILD_NUMBER"'",
-                      "color": "'"$COLOR"'"
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Branch Name:** '"$BRANCH_NAME"'",
-                      "color": "'"$COLOR"'"
+                      "color": "'"$color"'"
                     },
                     {
                       "type": "TextBlock",
                       "text": "**Latest Commit:** '"$COMMIT_HASH"'",
-                      "color": "'"$COLOR"'"
+                      "color": "'"$color"'"
                     }
                   ],
                   "msteams": {
                     "entities": [
                       {
                         "type": "mention",
-                        "text": "<at>${{ secrets.MENTIONED_ID }}</at>",
+                        "text": "<at>sreehass@amd.com</at>",
                         "mentioned": {
-                          "id": "'"$MENTIONED_ID"'",
-                          "name": "'"$MENTIONED_NAME"'"
+                          "id": "'"$mentionedId"'",
+                          "name": "'"$mentionedName"'"
                         }
                       }
                     ]
