@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  pull_request:
+  pull_request: 
     branches:
       - main
   workflow_dispatch: # Trigger to allow manual execution from GitHub Actions UI
@@ -17,10 +17,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      #- name: Simulate error
-      #  run: exit 1
-      #  id: error
-      
       - name: Get commit information
         if: always()
         id: commit_info
@@ -36,13 +32,13 @@ jobs:
           if [ -n "${{ steps.error }}" ]; then
             STATUS="❌ FAIL"
             COLOR="attention"
-            MENTIONED_ID=""
-            MENTIONED_NAME=""
+            MENTIONED_ID="${{ secrets.ERROR_MENTION_ID }}"
+            MENTIONED_NAME="${{ secrets.ERROR_MENTION_NAME }}"
           else
             STATUS="✅ PASS"
             COLOR="good"
-            MENTIONED_ID=${{ secrets.SUCCESS_MENTION_ID }}
-            MENTIONED_NAME=${{ secrets.SUCCESS_MENTION_NAME }}
+            MENTIONED_ID="${{ secrets.SUCCESS_MENTION_ID }}"
+            MENTIONED_NAME="${{ secrets.SUCCESS_MENTION_NAME }}"
           fi
           
           echo "::set-output name=status::$STATUS"
