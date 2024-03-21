@@ -12,7 +12,7 @@ on:
 jobs:
   build_and_notify:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -41,33 +41,33 @@ jobs:
             MENTIONED_NAME="${{ secrets.SUCCESS_MENTION_NAME }}"
           fi
 
-          echo "::set-output name=status::\"$STATUS\""
-          echo "::set-output name=color::\"$COLOR\""
-          echo "::set-output name=mentionedId::\"$MENTIONED_ID\""
-          echo "::set-output name=mentionedName::\"$MENTIONED_NAME\""
+          echo "::set-output name=status::$STATUS"
+          echo "::set-output name=color::$COLOR"
+          echo "::set-output name=mentionedId::$MENTIONED_ID"
+          echo "::set-output name=mentionedName::$MENTIONED_NAME"
 
       - name: Send notification to Microsoft Teams
         if: always()
         run: |
           # Get the GitHub workflow run URL
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
+          
           # Get the commit information from previous step
           COMMIT_HASH=${{ steps.commit_info.outputs.commit_hash }}
           BRANCH_NAME=${{ steps.commit_info.outputs.branch_name }}
-
+          
           # Get the repository URL
           REPO_URL="[${{ github.repository }}](${{ github.event.repository.html_url }})"
-
+          
           # Get the build number
           BUILD_NUMBER="${{ github.run_number }}"
-
+          
           # Get the status and recipients from previous step
-          STATUS="${{ steps.status_and_recipients.outputs.status }}"
-          COLOR="${{ steps.status_and_recipients.outputs.color }}"
-          MENTIONED_ID="${{ steps.status_and_recipients.outputs.mentionedId }}"
-          MENTIONED_NAME="${{ steps.status_and_recipients.outputs.mentionedName }}"
-
+          STATUS=${{ steps.status_and_recipients.outputs.status }}
+          COLOR=${{ steps.status_and_recipients.outputs.color }}
+          MENTIONED_ID=${{ steps.status_and_recipients.outputs.mentionedId }}
+          MENTIONED_NAME=${{ steps.status_and_recipients.outputs.mentionedName }}
+          
           # Generate the payload for the notification
           payload='{
             "type": "message",
@@ -134,6 +134,6 @@ jobs:
               }
             ]
           }'
-
+          
           # Send the payload to Microsoft Teams
           echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
