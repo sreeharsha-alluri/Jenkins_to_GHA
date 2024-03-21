@@ -17,9 +17,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      #- name: Simulate error
-      #  run: exit 1
-      #  id: error
+      - name: Simulate error
+        run: exit 1
+        id: error
       
       - name: Get commit information
         if: always()
@@ -31,7 +31,7 @@ jobs:
           echo "::set-output name=branch_name::$BRANCH_NAME"
           
       - name: Send notification to Microsoft Teams
-        if: always()
+        if: ${{ failure() }}
         run: |
           # Get the GitHub workflow run URL
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
@@ -47,17 +47,10 @@ jobs:
           BUILD_NUMBER="${{ github.run_number }}"
           
           # Determine the job status
-          if ${{ failure() }}; then
-            status="FAIL ❌"
-            color="attention"
-            mentionedId="${{ secrets.FAILURE_MENTION_ID }}"
-            mentionedName="${{ secrets.FAILURE_MENTION_NAME }}"
-          else
-            status="PASS ✅"
-            color="good"
-            mentionedId="${{ secrets.SUCCESS_MENTION_ID }}"
-            mentionedName="${{ secrets.SUCCESS_MENTION_NAME }}"
-          fi
+          status="FAIL ❌"
+          color="attention"
+          mentionedId="${{ secrets.FAILURE_MENTION_ID }}"
+          mentionedName="${{ secrets.FAILURE_MENTION_NAME }}"
           
           # Generate the payload for the notification
           payload='{
