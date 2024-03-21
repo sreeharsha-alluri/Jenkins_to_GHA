@@ -69,7 +69,8 @@ jobs:
           MENTIONED_NAME=${{ steps.status_and_recipients.outputs.mentionedName }}
           
           # Generate the payload for the notification
-          payload=$(echo '{
+          payload=$(cat <<EOF
+{
   "type": "message",
   "attachments": [
     {
@@ -133,7 +134,8 @@ jobs:
       }
     }
   ]
-}' | jq -c -M .)
-          
+}
+EOF
+)
           # Send the payload to Microsoft Teams
-          echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- '${{ secrets.MICROSOFT_TEAMS_WEBHOOK_URL }}'
+          echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- "${{ secrets.MICROSOFT_TEAMS_WEBHOOK_URL }}"
