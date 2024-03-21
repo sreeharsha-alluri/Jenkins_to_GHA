@@ -17,9 +17,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Simulate error
-        run: exit 1
-        id: error
+      #- name: Simulate error
+      #  run: exit 1
+      #  id: error
       
       - name: Get commit information
         id: commit
@@ -30,17 +30,7 @@ jobs:
           echo "::set-output name=commit_hash::$COMMIT_HASH"
           echo "::set-output name=branch_name::$BRANCH_NAME"
           
-      - name: Determine mention based on status
-        id: mention
-        run: |
-          if [ -n "${{ steps.error }}" ]; then
-            echo "::set-output name=mention::<at>apinapak@amd.com</at>"
-          else
-            echo "::set-output name=mention::<at>sreehass@amd.com</at>"
-          fi
-          
       - name: Send notification to Microsoft Teams
-        if: always()
         run: |
           # Get the GitHub workflow run URL
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
@@ -54,9 +44,6 @@ jobs:
           
           # Get the build number
           BUILD_NUMBER="${{ github.run_number }}"
-          
-          # Get the mention based on status
-          MENTION=$(echo "${{ steps.mention.outputs.mention }}")
           
           # Determine the job status
           if [ -n "${{ steps.error }}" ]; then
@@ -82,7 +69,7 @@ jobs:
                   "body": [
                     {
                       "type": "TextBlock",
-                      "text": "'"$MENTION"'",
+                      "text": "<at>sreehass@amd.com</at>",
                       "color": "'"$color"'"
                     },
                     {
@@ -125,7 +112,7 @@ jobs:
                     "entities": [
                       {
                         "type": "mention",
-                        "text": "'"$MENTION"'",
+                        "text": "<at>sreehass@amd.com</at>",
                         "mentioned": {
                           "id": "'"$mentionedId"'",
                           "name": "'"$mentionedName"'"
@@ -140,3 +127,4 @@ jobs:
           
           # Send the payload to Microsoft Teams
           echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
+
