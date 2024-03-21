@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  pull_request:
+  pull_request: 
     branches:
       - main
   workflow_dispatch: # Trigger to allow manual execution from GitHub Actions UI
@@ -17,9 +17,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Simulate error
-        run: exit 1
-        id: error
+      #- name: Simulate error
+      #  run: exit 1
+      #  id: error
       
       - name: Get commit information
         if: always()
@@ -46,18 +46,17 @@ jobs:
           # Get the build number
           BUILD_NUMBER="${{ github.run_number }}"
           
-          # Determine the job status based on the exit code of the previous step
-          if [ $? -ne 0 ]; then
-            status="FAIL ❌"
-            color="attention"
-            mentionedId="${{ secrets.FAILURE_MENTION_ID }}"
-            mentionedName="${{ secrets.FAILURE_MENTION_NAME }}"
-          else
+          # Determine the job status
+          if: ${{ success() }}
             status="PASS ✅"
             color="good"
             mentionedId="${{ secrets.SUCCESS_MENTION_ID }}"
             mentionedName="${{ secrets.SUCCESS_MENTION_NAME }}"
-          fi
+          else if: ${{ failure() }}
+            status="FAIL ❌"
+            color="attention"
+            mentionedId="${{ secrets.FAILURE_MENTION_ID }}"
+            mentionedName="${{ secrets.FAILURE_MENTION_NAME }}"
           
           # Generate the payload for the notification
           payload='{
