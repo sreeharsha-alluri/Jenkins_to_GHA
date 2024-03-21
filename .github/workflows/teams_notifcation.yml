@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  pull_request: 
+  pull_request:
     branches:
       - main
   workflow_dispatch: # Trigger to allow manual execution from GitHub Actions UI
@@ -18,28 +18,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Get commit information
-        if: always()
         id: commit_info
         run: |
           COMMIT_HASH=$(git rev-parse HEAD)
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           echo "::set-output name=commit_hash::$COMMIT_HASH"
           echo "::set-output name=branch_name::$BRANCH_NAME"
-          
-      - name: Determine job status
-        if: always()
-        run: |
-          if [ "${{ steps.error.outcome }}" == 'failure' ]; then
-            status="FAIL ❌"
-            color="attention"
-            mentionedId="${{ secrets.FAILURE_MENTION_ID }}"
-            mentionedName="${{ secrets.FAILURE_MENTION_NAME }}"
-          else
-            status="PASS ✅"
-            color="good"
-            mentionedId="${{ secrets.SUCCESS_MENTION_ID }}"
-            mentionedName="${{ secrets.SUCCESS_MENTION_NAME }}"
-          fi
           
       - name: Send notification to Microsoft Teams
         if: always()
@@ -56,6 +40,19 @@ jobs:
           
           # Get the build number
           BUILD_NUMBER="${{ github.run_number }}"
+          
+          # Determine the job status
+          if [ "${{ job.status }}" == 'failure' ]; then
+            status="FAIL ❌"
+            color="attention"
+            mentionedId="${{ secrets.FAILURE_MENTION_ID }}"
+            mentionedName="${{ secrets.FAILURE_MENTION_NAME }}"
+          else
+            status="PASS ✅"
+            color="good"
+            mentionedId="${{ secrets.SUCCESS_MENTION_ID }}"
+            mentionedName="${{ secrets.SUCCESS_MENTION_NAME }}"
+          fi
           
           # Generate the payload for the notification
           payload='{
