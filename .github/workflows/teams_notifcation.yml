@@ -22,6 +22,7 @@ jobs:
         id: error
       
       - name: Get commit information
+        if: always()
         id: commit_info
         run: |
           COMMIT_HASH=$(git rev-parse HEAD)
