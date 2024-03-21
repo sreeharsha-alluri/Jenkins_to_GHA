@@ -30,6 +30,10 @@ jobs:
           echo "::set-output name=commit_hash::$COMMIT_HASH"
           echo "::set-output name=branch_name::$BRANCH_NAME"
           
+      - name: Simulate an error
+        run: exit 1
+        id: error
+
       - name: Send notification to Microsoft Teams
         if: always()
         run: |
@@ -47,16 +51,16 @@ jobs:
           BUILD_NUMBER="${{ github.run_number }}"
           
           # Determine the job status
-          if: ${{ success() }}
-            status="PASS ✅"
-            color="good"
-            mentionedId="${{ secrets.SUCCESS_MENTION_ID }}"
-            mentionedName="${{ secrets.SUCCESS_MENTION_NAME }}"
-          else if: ${{ failure() }}
+          if: steps.error.outcome == 'failure'
             status="FAIL ❌"
             color="attention"
             mentionedId="${{ secrets.FAILURE_MENTION_ID }}"
             mentionedName="${{ secrets.FAILURE_MENTION_NAME }}"
+          else
+            status="PASS ✅"
+            color="good"
+            mentionedId="${{ secrets.SUCCESS_MENTION_ID }}"
+            mentionedName="${{ secrets.SUCCESS_MENTION_NAME }}"
           
           # Generate the payload for the notification
           payload='{
