@@ -68,75 +68,12 @@ jobs:
           MENTIONED_ID=${{ steps.status_and_recipients.outputs.mentionedId }}
           MENTIONED_NAME=${{ steps.status_and_recipients.outputs.mentionedName }}
           
-          # Generate the payload for the notification
-          payload=$(cat <<EOF
-{
-  "type": "message",
-  "attachments": [
-    {
-      "contentType": "application/vnd.microsoft.card.adaptive",
-      "content": {
-        "type": "AdaptiveCard",
-        "body": [
-          {
-            "type": "TextBlock",
-            "text": "<at>${MENTIONED_ID}</at>",
-            "color": "${COLOR}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "**Job Name:** Build and Notify",
-            "color": "${COLOR}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "**Job URL:** [View Job]('${JOB_URL}')",
-            "color": "${COLOR}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "**Status:** ${STATUS}",
-            "color": "${COLOR}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "**Repository URL:** ${REPO_URL}",
-            "color": "${COLOR}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "**Build Number:** ${BUILD_NUMBER}",
-            "color": "${COLOR}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "**Branch Name:** ${BRANCH_NAME}",
-            "color": "${COLOR}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "**Latest Commit:** ${COMMIT_HASH}",
-            "color": "${COLOR}"
-          }
-        ],
-        "msteams": {
-          "entities": [
-            {
-              "type": "mention",
-              "text": "<at>${MENTIONED_ID}</at>",
-              "mentioned": {
-                "id": "${MENTIONED_ID}",
-                "name": "${MENTIONED_NAME}"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ]
-}
-EOF
-)
-          
           # Send the payload to Microsoft Teams
-          echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- "${{ secrets.MICROSOFT_TEAMS_WEBHOOK_URL }}"
+          echo "Job Name: Build and Notify
+          Job URL: $JOB_URL
+          Status: $STATUS
+          Repository URL: $REPO_URL
+          Build Number: $BUILD_NUMBER
+          Branch Name: $BRANCH_NAME
+          Latest Commit: $COMMIT_HASH" |
+          curl -X POST -H 'Content-Type: application/json' -d @- "${{ secrets.MICROSOFT_TEAMS_WEBHOOK_URL }}"
