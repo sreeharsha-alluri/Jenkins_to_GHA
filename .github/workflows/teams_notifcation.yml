@@ -47,7 +47,7 @@ jobs:
           BUILD_NUMBER="${{ github.run_number }}"
           
           # Determine the job status and recipients dynamically using secrets
-          if [ -n "${{ steps.error }}" ]; then
+          if [ -n "${{ failure() }}" ]; then
               STATUS="FAIL ❌"
               COLOR="attention"
               MENTIONED_ID="${{ secrets.FAILURE_MENTION_ID }}"
