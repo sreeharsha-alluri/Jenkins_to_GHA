@@ -21,15 +21,24 @@ jobs:
         run: exit 1
         id: error
       
-            - name: Send notification to Microsoft Teams
+      - name: Get commit information
+        id: commit
+        run: |
+          COMMIT_HASH=$(git rev-parse HEAD)
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          
+          echo "::set-output name=commit_hash::$COMMIT_HASH"
+          echo "::set-output name=branch_name::$BRANCH_NAME"
+          
+      - name: Send notification to Microsoft Teams
         if: always()
         run: |
           # Get the GitHub workflow run URL
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           
           # Get the commit information from the previous step
-          COMMIT_HASH=$(echo "${{ github.sha }}")
-          BRANCH_NAME=$(echo "${{ github.ref }}")
+          COMMIT_HASH=$(echo "${{ steps.commit.outputs.commit_hash }}")
+          BRANCH_NAME=$(echo "${{ steps.commit.outputs.branch_name }}")
           
           # Get the repository URL
           REPO_URL="[${{ github.repository_owner }}/${{ github.repository_name }}](${{ github.repository_url }})"
