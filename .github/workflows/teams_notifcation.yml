@@ -1,5 +1,7 @@
 name: 'Build and Notify'
 
+description: 'Builds and notifies Microsoft Teams about the status of the workflow run.'
+
 on:
   push:
     branches:
@@ -35,9 +37,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Simulate error
-        run: exit 1
-        id: error
+      #- name: Simulate error
+      #  run: exit 1
+      #  id: error
       
       - name: Get commit information
         if: always()
