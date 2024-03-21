@@ -45,7 +45,7 @@ jobs:
           echo "::set-output name=color::$COLOR"
           echo "::set-output name=mentionedId::$MENTIONED_ID"
           echo "::set-output name=mentionedName::$MENTIONED_NAME"
-
+          
       - name: Send notification to Microsoft Teams
         if: always()
         run: |
