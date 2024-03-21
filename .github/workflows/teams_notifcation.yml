@@ -17,9 +17,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Simulate error
-        run: exit 1
-        id: error
+      #- name: Simulate error
+      #  run: exit 1
+      #  id: error
       
       - name: Get commit information
         id: commit
@@ -29,6 +29,15 @@ jobs:
           
           echo "::set-output name=commit_hash::$COMMIT_HASH"
           echo "::set-output name=branch_name::$BRANCH_NAME"
+          
+      - name: Determine mention based on status
+        id: mention
+        run: |
+          if [ -n "${{ steps.error }}" ]; then
+            echo "::set-output name=mention::<at>apinapak@amd.com</at>"
+          else
+            echo "::set-output name=mention::<at>sreehass@amd.com</at>"
+          fi
           
       - name: Send notification to Microsoft Teams
         if: always()
@@ -46,16 +55,15 @@ jobs:
           # Get the build number
           BUILD_NUMBER="${{ github.run_number }}"
           
+          # Get the mention based on status
+          MENTION=$(echo "${{ steps.mention.outputs.mention }}")
+          
           # Determine the job status
           if [ -n "${{ steps.error }}" ]; then
             status="FAIL ❌"
             color="attention"
             mentionedId="apinapak@amd.com"
             mentionedName="Pinapaka, Abhilash Sarath Teja"
-            
-            # If the job failed, branch name and latest commit information won't be available, so set them to empty
-            BRANCH_NAME=""
-            COMMIT_HASH=""
           else
             status="PASS ✅"
             color="good"
@@ -74,7 +82,7 @@ jobs:
                   "body": [
                     {
                       "type": "TextBlock",
-                      "text": "<at>sreehass@amd.com</at>",
+                      "text": "'"$MENTION"'",
                       "color": "'"$color"'"
                     },
                     {
@@ -117,7 +125,7 @@ jobs:
                     "entities": [
                       {
                         "type": "mention",
-                        "text": "<at>sreehass@amd.com</at>",
+                        "text": "'"$MENTION"'",
                         "mentioned": {
                           "id": "'"$mentionedId"'",
                           "name": "'"$mentionedName"'"
