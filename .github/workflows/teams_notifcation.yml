@@ -52,6 +52,10 @@ jobs:
             color="attention"
             mentionedId="apinapak@amd.com"
             mentionedName="Pinapaka, Abhilash Sarath Teja"
+            
+            # If the job failed, branch name and latest commit information won't be available, so set them to empty
+            BRANCH_NAME=""
+            COMMIT_HASH=""
           else
             status="PASS ✅"
             color="good"
