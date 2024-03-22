@@ -20,5 +20,5 @@ jobs:
         run: echo "Deploying"
 
       - name: Build and Notify
-        uses: ./.github/actions/Composite_Actions.yml
+        uses: ./.github/actions/Composite_Function.yml
         
