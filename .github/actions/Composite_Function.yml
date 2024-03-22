@@ -3,13 +3,9 @@ runs:
   using: 'composite'
   shell: bash  # Define shell at the root level
   steps:
-    - name: Debug Information
-      run: |
-        echo "Composite_Function is being executed."
-        pwd  # Print current working directory
-        ls -la  # List all files and directories
-      shell: bash
-      
+    - name: Composite_Function Start
+      run: echo "Starting Composite_Function..."
+
     - name: Checkout code
       run: actions/checkout@v2
     
