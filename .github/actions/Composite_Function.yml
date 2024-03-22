@@ -2,7 +2,10 @@ name: 'Build and Notify'
 runs:
   using: 'composite'
   steps:
-    #- run: checkout actions/checkout@v2
+    - name: Checkout code
+    - run: checkout actions/checkout@v2
+    
+    #- name: Simulate error
     #- run: exit 1
     #  id: error
     - run: |
@@ -108,7 +111,3 @@ runs:
 
         # Send the payload to Microsoft Teams
         echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
-
-    # Checkout the repository again to ensure it's available for subsequent actions
-    - name: Checkout repository
-      uses: actions/checkout@v3
