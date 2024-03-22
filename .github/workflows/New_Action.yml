@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2  # Add this line to checkout the repository
+        uses: actions/checkout@v2
 
       - name: Build
         run: echo "Building"
@@ -23,4 +23,4 @@ jobs:
         run: echo "Deploying"
 
       - name: Notify Build Status
-        uses: ./.github/actions/Composite_Function.yml
+        uses: ./.github/actions/  # Update this path to point to the correct directory
