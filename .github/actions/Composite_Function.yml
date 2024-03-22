@@ -10,6 +10,7 @@ runs:
     #- run: exit 1
     #  id: error
     - run: |
+      shell: bash
         COMMIT_HASH=$(git rev-parse HEAD)
         BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
         echo "::set-output name=commit_hash::$COMMIT_HASH"
@@ -17,6 +18,7 @@ runs:
       shell: bash  # Add the shell property here
       id: commit_info
     - run: |
+      shell: bash
         # Your notification logic here
         COMMIT_HASH=${{ steps.commit_info.outputs.commit_hash }}
         BRANCH_NAME=${{ steps.commit_info.outputs.branch_name }}
