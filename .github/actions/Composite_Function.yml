@@ -1,6 +1,7 @@
 name: 'Build and Notify'
 runs:
   using: 'composite'
+  shell: bash
   steps:
     - name: Checkout code
       run: actions/checkout@v2
