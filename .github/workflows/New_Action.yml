@@ -26,4 +26,5 @@ jobs:
         run: echo "Deploying"
 
       - name: Notify Build Status
-        run: ./.github/actions/Composite_Function.yml # Path to your composite action or script
+        run: chmod +x ./.github/actions/Composite_Function.yml
+        
