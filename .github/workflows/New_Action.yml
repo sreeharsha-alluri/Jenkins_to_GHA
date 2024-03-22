@@ -14,12 +14,15 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build
+        shell: bash
         run: echo "Building"
 
       - name: Test
+        shell: bash
         run: echo "Testing"
 
       - name: Deploy
+        shell: bash
         run: echo "Deploying"
 
       - name: Notify Build Status
