@@ -20,5 +20,4 @@ jobs:
         run: echo "Deploying"
 
       - name: Notify Build Status
-        uses: ./.github/actions/Composite_Actions.yml
-        
+        uses: sreeharsha-alluri/Jenkins_to_GHA@main
