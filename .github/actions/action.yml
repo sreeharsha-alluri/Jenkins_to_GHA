@@ -1,0 +1,5 @@
+name: 'Composite Function'
+runs:
+  using: 'composite'
+  steps:
+    - run: echo "This is a composite action"
