@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch: # Trigger to allow manual execution from GitHub Actions UI
 
 jobs:
   build-test-deploy:
@@ -21,4 +22,3 @@ jobs:
 
       - name: Build and Notify
         uses: ./.github/actions/Composite_Function.yml
-        
