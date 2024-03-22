@@ -1,7 +1,7 @@
 name: Simple Workflow
 
 on:
-  push:
+  push: 
     branches:
       - main
   workflow_dispatch: # Trigger to allow manual execution from GitHub Actions UI
