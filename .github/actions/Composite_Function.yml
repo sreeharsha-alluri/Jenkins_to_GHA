@@ -1,7 +1,7 @@
 name: 'Build and Notify'
 runs:
   using: 'composite'
-  shell: bash
+  shell: bash  # Add the shell property at the root level
   steps:
     - name: Checkout code
       run: actions/checkout@v2
