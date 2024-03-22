@@ -23,4 +23,4 @@ jobs:
         run: echo "Deploying"
 
       - name: Notify Build Status
-        uses: ./.github/actions/  # Update this path to point to the correct directory
+        uses: ./.github/actions/Composite_Function.yml  # Update this path to point to the correct composite action file
