@@ -1,0 +1,28 @@
+name: Simple Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    stages:
+      - build
+      - test
+      - deploy
+
+    steps:
+      - name: Build
+        stage: build
+        run: echo "Building"
+
+      - name: Test
+        stage: test
+        run: echo "Testing"
+
+      - name: Deploy
+        stage: deploy
+        run: echo "Deploying"
