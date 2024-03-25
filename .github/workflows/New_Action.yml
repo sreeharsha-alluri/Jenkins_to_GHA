@@ -29,4 +29,5 @@ jobs:
         run: |
           echo "Calling Composite_Function..."
           chmod +x ./.github/actions/Composite_Function.yml
+          pwd
           echo "Composite_Function called successfully."
