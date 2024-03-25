@@ -26,6 +26,8 @@ jobs:
         run: echo "Deploying"
 
       - name: Notify Build Status
-        uses: ./.github/actions/Composite_Function.yml
+        run: |
+          echo "Calling Composite_Function..."
+          chmod +x ./.github/actions/Composite_Function.yml
           
           
