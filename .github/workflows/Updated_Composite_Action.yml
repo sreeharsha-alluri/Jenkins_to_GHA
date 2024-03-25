@@ -50,13 +50,13 @@ jobs:
           if [ -n "${{ steps.error }}" ]; then
             status="FAIL ❌"
             color="attention"
-            mentionedId="${{ ERROR_MENTION_ID }}"
-            mentionedName="${{ ERROR_MENTION_NAME }}"
+            mentionedId="${ERROR_MENTION_ID}"
+            mentionedName="${ERROR_MENTION_NAME}"
           else
             status="PASS ✅"
             color="good"
-            mentionedId="${{ SUCCESS_MENTION_ID }}"
-            mentionedName="${{ SUCCESS_MENTION_NAME }}"
+            mentionedId="${SUCCESS_MENTION_ID}"
+            mentionedName="${SUCCESS_MENTION_NAME}"
           fi
           
           # Generate the payload for the notification
