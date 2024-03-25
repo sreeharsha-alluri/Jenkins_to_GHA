@@ -15,7 +15,7 @@ jobs:
 
       - name: Build
         shell: bash
-        run: echo "Building 1"
+        run: echo "Building"
 
       - name: Test
         shell: bash
@@ -26,8 +26,6 @@ jobs:
         run: echo "Deploying"
 
       - name: Notify Build Status
-        run: |
-          echo "Calling Composite_Function..."
-          chmod +x ./.github/actions/Composite_Action.yml
-          pwd
-          echo "Composite_Function called successfully."
+        uses: sreeharsha-alluri/Jenkins_to_GHA/action.yml@main
+          
+          
