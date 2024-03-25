@@ -25,4 +25,4 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Notify Build Status
-        uses: ./Jenkins_to_GHA/action.yml@main
+        uses: ./sreeharsha-alluri/Jenkins_to_GHA/action.yml@main
