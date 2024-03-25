@@ -1,6 +1,6 @@
 name: Build and Notify
 
-on:
+on: 
   push:
     branches:
       - main
