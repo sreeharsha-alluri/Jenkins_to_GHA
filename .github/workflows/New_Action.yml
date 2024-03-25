@@ -26,6 +26,6 @@ jobs:
         run: echo "Deploying"
 
       - name: Notify Build Status
-        uses: .github/actions/Compoiste_Action.yml@main
+        uses: ./.github/actions/Composite_Function.yml
           
           
