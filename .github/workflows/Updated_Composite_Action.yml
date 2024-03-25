@@ -1,10 +1,10 @@
 name: Build and Notify
 
-on: 
+on:
   push:
     branches:
       - main
-  pull_request: 
+  pull_request:
     branches:
       - main
   workflow_dispatch: # Trigger to allow manual execution from GitHub Actions UI
@@ -13,13 +13,6 @@ jobs:
   build_and_notify:
     runs-on: ubuntu-latest
 
-    env:  # Define environment variables
-      ERROR_MENTION_ID: ${{ secrets.ERROR_MENTION_ID }}
-      ERROR_MENTION_NAME: ${{ secrets.ERROR_MENTION_NAME }}
-      SUCCESS_MENTION_ID: ${{ secrets.SUCCESS_MENTION_ID }}
-      SUCCESS_MENTION_NAME: ${{ secrets.SUCCESS_MENTION_NAME }}
-      
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -27,7 +20,7 @@ jobs:
       #- name: Simulate error
       #  run: exit 1
       #  id: error
-      
+
       - name: Get commit information
         if: always()
         id: commit_info
@@ -42,30 +35,30 @@ jobs:
         run: |
           # Get the GitHub workflow run URL
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          
+
           # Get the commit information from previous step
           COMMIT_HASH=${{ steps.commit_info.outputs.commit_hash }}
           BRANCH_NAME=${{ steps.commit_info.outputs.branch_name }}
-          
+
           # Get the repository URL
           REPO_URL="[${{ github.repository }}](${{ github.event.repository.html_url }})"
-          
+
           # Get the build number
           BUILD_NUMBER="${{ github.run_number }}"
-          
+
           # Determine the job status
           if [ -n "${{ steps.error }}" ]; then
             status="FAIL ❌"
             color="attention"
-            mentionedId="$ERROR_MENTION_ID"
-            mentionedName="$ERROR_MENTION_NAME"
+            mentionedId="${{ secrets.ERROR_MENTION_ID }}"
+            mentionedName="${{ secrets.ERROR_MENTION_NAME }}"
           else
             status="PASS ✅"
             color="good"
-            mentionedId="$SUCCESS_MENTION_ID"
-            mentionedName="$SUCCESS_MENTION_NAME"
+            mentionedId="${{ secrets.SUCCESS_MENTION_ID }}"
+            mentionedName="${{ secrets.SUCCESS_MENTION_NAME }}"
           fi
-          
+
           # Generate the payload for the notification
           payload='{
             "type": "message",
@@ -132,6 +125,6 @@ jobs:
               }
             ]
           }'
-          
+
           # Send the payload to Microsoft Teams
           echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
