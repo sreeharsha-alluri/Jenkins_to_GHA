@@ -17,9 +17,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      #- name: Simulate error
-      #  run: exit 1
-      #  id: error
+      - name: Simulate error
+        run: exit 1
+        id: error
       
       - name: Get commit information
         if: always()
@@ -50,13 +50,13 @@ jobs:
           if [ -n "${{ steps.error }}" ]; then
             status="FAIL ❌"
             color="attention"
-            mentionedId="${{ ERROR_MENTION_ID }}"
-            mentionedName="${{ ERROR_MENTION_NAME }}"
+            mentionedId="${{ secrets.ERROR_MENTION_ID }}"
+            mentionedName="${{ secrets.ERROR_MENTION_NAME }}"
           else
             status="PASS ✅"
             color="good"
-            mentionedId="${{ SUCCESS_MENTION_ID }}"
-            mentionedName="${{ SUCCESS_MENTION_NAME }}"
+            mentionedId="${{ secrets.SUCCESS_MENTION_ID }}"
+            mentionedName="${{ secrets.SUCCESS_MENTION_NAME }}"
           fi
           
           # Generate the payload for the notification
