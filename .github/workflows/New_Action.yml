@@ -28,6 +28,5 @@ jobs:
       - name: Notify Build Status
         run: |
           echo "Calling Composite_Function..."
-          chmod +x ./.github/actions/ 
-          #Composite_Function.yml
+          chmod +x ./.github/actions/Composite_Function.yml
           echo "Composite_Function called successfully."
