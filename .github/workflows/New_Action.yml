@@ -15,7 +15,7 @@ jobs:
 
       - name: Build
         shell: bash
-        run: echo "Building"
+        run: echo "Building 1"
 
       - name: Test
         shell: bash
